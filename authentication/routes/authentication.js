@@ -15,9 +15,4 @@ router.route('/login/jwt')
 router.route('/signup')
     .post(userController.signUp);
 
-// accept an invite
-router.get('/invite', (req, res) => {
-    res.send("pong");
-});
-
 module.exports = router;

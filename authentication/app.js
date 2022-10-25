@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRouter = require('./routes/authentication.js');
+const inviteRouter = require('./routes/invite.js');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
@@ -18,6 +19,7 @@ app.use(session({ secret: process.env.SECRET, cookie: { maxAge: 60000 }})); // t
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(authRouter);
+app.use(inviteRouter);
 
 // passport config
 //passport.use(new LocalStrategy(User.authenticate()));
