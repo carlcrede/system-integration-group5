@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('./../controllers/userController');
+const userController = require('../controllers/userController');
 const passport = require('passport');
-const User = require('./../models/User');
+const User = require('../models/User');
 
 // log in using local strategy (email/password)
 router.route('/login').post(userController.logIn);

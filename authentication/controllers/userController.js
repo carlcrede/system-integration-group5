@@ -1,6 +1,6 @@
 const passport = require('passport');
 const Invite = require('../models/Invite');
-const User = require('./../models/User');
+const User = require('../models/User');
 const { v4: uuidv4 } = require('uuid');
 
 // log in with credentials

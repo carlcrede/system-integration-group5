@@ -34,7 +34,12 @@ mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: tru
         console.log('Connected to database');
 });
 
-const PORT = process.env.port || 3000;
+app.get('/', (req, res) => {
+    res.send('Hello from App Engine!');
+  });
+
+
+const PORT = process.env.port || 8080;
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
 });
