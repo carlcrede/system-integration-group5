@@ -121,6 +121,7 @@ router.route('/signup')
 router.route('/invites')
     .post(userController.createInvite);
 
+
 /**
  * @openapi
  * /invite/{token}:
@@ -132,6 +133,120 @@ router.route('/invites')
  *         description: Returns an object of an invite.
  */
 router.route('/invite/:token')
-    .get(userController.acceptInvite);
+    .get(userController.getInvite);
+
+
+/**
+ * @openapi
+ * /invite/{invitee_email}&{invited_email}:
+ *   post:
+ *     summary: Accepts an invite, deleting it and creating the user
+ *     description: Accepts invite
+ *    
+ *     parameters:
+ *       - in: path
+ *         name: invitee_email
+ *         required: true
+ *         type: string
+ *         description: The invitee email
+ *       - in: path
+ *         name: invited_email
+ *         required: true
+ *         type: string
+ *         description: The invited email 
+ *     
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 default: "Steve Jobs"
+ *               password:
+ *                 type: string
+ *                 default: "123"
+ *               picturePath:
+ *                 type: string
+ *     
+ *     responses:
+ *       200:
+ *         description: Returns a success message and the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       404:
+ *         description: Returns an error indicating the invite couldn't be found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ */
+ router.route('/invite/:invitee_email&:invited_email').post(userController.acceptInvite2);
+
+/**
+ * @openapi
+ * /invite/{token}:
+ *   post:
+ *     summary: Accepts an invite, deleting it and creating the user
+ *     description: Accepts invite
+ *    
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         type: string
+ *         description: The invite token
+ *     
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 default: "Steve Jobs"
+ *               password:
+ *                 type: string
+ *                 default: "123"
+ *               picturePath:
+ *                 type: string
+ *     
+ *     responses:
+ *       200:
+ *         description: Returns a success message and the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       404:
+ *         description: Returns an error indicating the invite couldn't be found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ */
+ router.route('/invite/:token').post(userController.acceptInviteToken);
 
 module.exports = router;

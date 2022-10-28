@@ -53,7 +53,7 @@ async function createInvite(req, res) {
     });
 }
 
-async function acceptInvite(req, res) {
+async function getInvite(req, res) {
     Invite.findOne({
         token: req.params.token
     }, (err, invite) => {
@@ -79,9 +79,94 @@ async function acceptInvite(req, res) {
     });
 }
 
+
+async function acceptInvite(req, res) {
+    // check if invite actually exists
+    Invite.findOne({
+        invitee_email: req.params.invitee_email,
+        invited_email: req.params.invited_email
+    }, async (err, invite) => {
+        if (err) {
+            res.statusCode = 500;
+            res.json({ err: err });
+        }
+        else if (!invite) {
+            res.statusCode = 404;
+            res.json({ err: "Invite not found" });
+        }
+        else {
+            if (!req.body.password) {
+                res.statusCode = 400;
+                res.json({ message: 'No password was proivided'});
+            } else {
+                const user = new User({
+                    email: req.params.invited_email,
+                    name: req.body.name,
+                    picturePath: req.body.picturePath
+                });
+                await user.setPassword(req.body.password); // passport will salt and hash password for us
+                await user.save().then(() => {
+                    // delete invitation
+                    Invite.deleteOne({
+                        invitee_email: req.params.invitee_email,
+                        invited_email: req.params.invited_email
+                    }).then(() => {
+                        res.statusCode = 200;
+                        res.json({
+                            message: 'Invite accepted',
+                            user: user
+                        });
+                    });
+                });
+            }
+        }
+    });
+}
+
+async function acceptInviteToken(req, res) {
+      // check if invite actually exists
+      Invite.findOne({
+        token: req.params.token
+    }, async (err, invite) => {
+        if (err) {
+            res.statusCode = 500;
+            res.json({ err: err });
+        }
+        else if (!invite) {
+            res.statusCode = 404;
+            res.json({ err: "Invite not found" });
+        }
+        else {
+            if (!req.body.password) {
+                res.statusCode = 400;
+                res.json({ message: 'No password was proivided'});
+            } else {
+                const user = new User({
+                    email: invite.invited_email,
+                    name: req.body.name,
+                    picturePath: req.body.picturePath
+                });
+                await user.setPassword(req.body.password); // passport will salt and hash password for us
+                await user.save().then(() => {
+                    // delete invitation
+                    Invite.deleteOne({ token: req.params.token }).then(() => {
+                        res.statusCode = 200;
+                        res.json({
+                            message: 'Invite accepted',
+                            user: user
+                        });
+                    });
+                });
+            }         
+        }
+    });
+}
+
 module.exports = {
     logIn,
     signUp,
     createInvite,
-    acceptInvite
+    getInvite,
+    acceptInvite,
+    acceptInviteToken
 };
