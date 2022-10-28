@@ -34,7 +34,12 @@ app.use('/docs', swaggerUI.serve, swaggerUI.setup(openapiSpecification));
 // app.use(express.logger());   // Isn't bundled with express anymore
 app.use(bodyParser.json());
 app.use(cookieParser());    // for jwt i assume
-app.use(session({ secret: process.env.SECRET, cookie: { maxAge: 60000 } })); // todo understand sessions better
+app.use(session({ 
+    secret: process.env.SECRET,
+    cookie: { maxAge: 60000 },
+    resave: true,
+    saveUninitialized: true
+})); // todo understand sessions better
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(router);
