@@ -117,6 +117,20 @@ router.route('/signup')
  *     responses:
  *       200:
  *         description: Returns an invite.
+ * 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               invitee_email:
+ *                 type: string
+ *                 default: "invitee@email.com"
+ *               invited_email:
+ *                 type: string
+ *                 default: "invited@email.com"
  */
 router.route('/invites')
     .post(userController.createInvite);
@@ -128,6 +142,13 @@ router.route('/invites')
  *   get:
  *     summary: Returns an invite in json format
  *     description: Get an invite
+ * 
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         type: string
+ *         description: The invite token
  *     responses:
  *       200:
  *         description: Returns an object of an invite.
@@ -193,7 +214,7 @@ router.route('/invite/:token')
  *                 err:
  *                   type: string
  */
- router.route('/invite/:invitee_email&:invited_email').post(userController.acceptInvite2);
+router.route('/invite/:invitee_email&:invited_email').post(userController.acceptInvite);
 
 /**
  * @openapi
@@ -247,6 +268,6 @@ router.route('/invite/:token')
  *                 err:
  *                   type: string
  */
- router.route('/invite/:token').post(userController.acceptInviteToken);
+router.route('/invite/:token').post(userController.acceptInviteToken);
 
 module.exports = router;
