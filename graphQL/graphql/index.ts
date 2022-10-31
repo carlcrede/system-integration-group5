@@ -50,7 +50,7 @@ const typeDefs = gql`
         productImage(id: ID!): ProductImage
         productAdditionalInfo(id: ID!): ProductAdditionalInfo
         getProductsBySearchTerm(term:String!): [Product]
-        getProductsByPrice(maxPrice:Float, minPrice:Float, ascending: Boolean=True): [Product]
+        getProductsByPrice(maxPrice:Float, minPrice:Float): [Product]
     }
 `;
 
@@ -75,25 +75,23 @@ const resolvers = {
         ).get(args.id),
         
         
-        getProductsBySearchTerm: (_,args) => {
-            // const db = new Database('foobar.db', { verbose: console.log });  
-            return db.prepare(
+        getProductsBySearchTerm: (_,args) => db.prepare(
             `SELECT * FROM products
             WHERE product_name LIKE '%${args.term}%' OR product_sub_title LIKE '%${args.term}%' OR product_description LIKE '%${args.term}%'`
-        ).all()
-    },
+        ).all(),
 
-        getProductsByPrice: (maxPrice?:Number, minPrice?:Number, ascending: Boolean=true) => { 
-            const orderedby: String = ascending ? 'ASC' : 'DESC';
-            const minPriceQuery: String = (!maxPrice && minPrice) ? `WHERE price >= ${minPrice}` : ""
-            const maxPriceQuery: String = (maxPrice && !minPrice) ? `WHERE price <= ${maxPrice}` : ""
-            const bothPriceQuery: String = (maxPrice && minPrice) ? `WHERE price <= ${maxPrice} AND price >= ${minPrice}` : ""
+        // this doesnot work
+        getProductsByPrice: (_, args) => { 
+            const orderedby: String = args.ascending ? 'ASC' : 'DESC';
+            const minPriceQuery: String = (!args.maxPrice && args.minPrice) ? `WHERE price >= ${args.minPrice}` : ""
+            const maxPriceQuery: String = (args.maxPrice && !args.minPrice) ? `WHERE price <= ${args.maxPrice}` : ""
+            const bothPriceQuery: String = (args.maxPrice && args.minPrice) ? `WHERE price <= ${args.maxPrice} AND price >= ${args.minPrice}` : ""
             db.prepare(
             `SELECT * FROM products
             ${minPriceQuery}
             ${bothPriceQuery}
             ${maxPriceQuery}
-            ORDER BY price ${orderedby} `
+            ORDER BY price ${orderedby}`
         ).all()
     },
     },
