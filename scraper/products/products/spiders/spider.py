@@ -1,4 +1,4 @@
-from products.items import ProductsItem
+from products.items import ProductsItem, ProductImagesItem, ProductsAdditionalInfo
 import scrapy
 
 headers = {
@@ -61,3 +61,11 @@ class ItemSpider(scrapy.Spider):
             item['main_category'] = response.css('div.breadcrumb span')[-1].css('span.breadcrumb-linkText::text').get().strip()
             item['sub_category'] = response.css('h1.offerList-title::text').get()
             yield item
+            yield scrapy.Request(url="https://www.idealo.co.uk/compare/"+product_id, headers=headers, callback=self.parse_item)
+
+    def parse_item(self, response):
+        # TODO: implement missing items
+        photo_item = ProductImagesItem()
+        choices_item = ProductsAdditionalInfo()
+        title = response.css('h1.oopStage-title span::text').get()
+        yield {title: title}
