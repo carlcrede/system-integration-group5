@@ -133,7 +133,7 @@ router.route('/signup')
  *                 default: "invited@email.com"
  */
 router.route('/invites')
-    .post(userController.createInvite);
+    .post(userController.authenticate, userController.createInvite);
 
 
 /**
@@ -154,7 +154,7 @@ router.route('/invites')
  *         description: Returns an object of an invite.
  */
 router.route('/invite/:token')
-    .get(userController.getInvite);
+    .get(userController.authenticate, userController.getInvite);
 
 
 /**
@@ -214,7 +214,7 @@ router.route('/invite/:token')
  *                 err:
  *                   type: string
  */
-router.route('/invite/:invitee_email&:invited_email').post(userController.acceptInvite);
+router.route('/invite/:invitee_email&:invited_email').post(userController.authenticate, userController.acceptInvite);
 
 /**
  * @openapi
@@ -268,6 +268,10 @@ router.route('/invite/:invitee_email&:invited_email').post(userController.accept
  *                 err:
  *                   type: string
  */
-router.route('/invite/:token').post(userController.acceptInviteToken);
+router.route('/invite/:token').post(userController.authenticate, userController.acceptInviteToken);
+
+// if you logout and try to use the same routes with the same session id, then
+// you will not be allowed in
+router.route('/logout').post(userController.authenticate, userController.logout);
 
 module.exports = router;

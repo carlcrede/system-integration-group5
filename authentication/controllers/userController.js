@@ -162,11 +162,31 @@ async function acceptInviteToken(req, res) {
     });
 }
 
+function authenticate(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.statusCode = 403;
+    res.json({ message: 'You need to log in!' });
+}
+
+function logout(req, res, next) {
+    req.logout((err) => {
+        if (err) {
+            return next;
+        }
+
+        res.json({ message: 'You have been logged out'});
+    });
+}
+
 module.exports = {
     logIn,
     signUp,
     createInvite,
     getInvite,
     acceptInvite,
-    acceptInviteToken
+    acceptInviteToken,
+    authenticate,
+    logout
 };

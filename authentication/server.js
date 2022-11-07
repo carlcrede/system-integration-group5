@@ -35,10 +35,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({ 
     secret: process.env.SECRET,
-    cookie: { maxAge: 60000 },
-    resave: true,
-    saveUninitialized: true
-})); // todo understand sessions better
+    resave: false,
+    saveUninitialized: false
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(router);
