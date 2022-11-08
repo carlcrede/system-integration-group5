@@ -3,18 +3,27 @@ import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
 import Database, { Database as DB} from "better-sqlite3";
 import fetch from 'cross-fetch';
 
-const db_connect = async () => {
-    const db_file = await fetch('https://keablob.blob.core.windows.net/products/products_final.db');
-    const db_db = await db_file.arrayBuffer();
-    const db_buff = Buffer.from(db_db);
-    const db = new Database(db_buff, { verbose: console.log });
-    console.log("here")
-    const query = db.prepare(`SELECT * FROM products`).all(); 
-    console.log(query)
-    return db;
-}
 let db: DB;
-db_connect().then(res => db = res);
+let modified: number | undefined;
+
+const db_connect = async () => {
+    const response = await fetch('https://keablob.blob.core.windows.net/products/products_final.db');
+    const last_modified = new Date(response.headers.get('last-modified')).getTime();
+    
+    if (modified && modified >= last_modified) {
+        return;
+    }
+    
+    modified = last_modified;
+
+    const db_db = await response.arrayBuffer();
+    const db_buff = Buffer.from(db_db);
+    db = new Database(db_buff, { verbose: console.log });
+}
+
+setInterval(async () => {
+    await db_connect();
+}, 10000);
 
 const typeDefs = gql`
     type Product {
@@ -54,7 +63,7 @@ const typeDefs = gql`
     }
 `;
 
-
+// TODO: categories, subcategories, getProductsby(sub)category, getProductByRating(int 0-100)
 
 const resolvers = {
     Query: {
