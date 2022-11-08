@@ -214,7 +214,7 @@ router.route('/invite/:token')
  *                 err:
  *                   type: string
  */
-router.route('/invite/:invitee_email&:invited_email').post(userController.authenticate, userController.acceptInvite);
+router.route('/invite/:invitee_email&:invited_email').post(userController.acceptInvite);
 
 /**
  * @openapi
@@ -268,7 +268,7 @@ router.route('/invite/:invitee_email&:invited_email').post(userController.authen
  *                 err:
  *                   type: string
  */
-router.route('/invite/:token').post(userController.authenticate, userController.acceptInviteToken);
+router.route('/invite/:token').post(userController.acceptInviteToken);
 
 // if you logout and try to use the same routes with the same session id, then
 // you will not be allowed in
