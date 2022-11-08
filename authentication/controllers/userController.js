@@ -1,60 +1,193 @@
 const passport = require('passport');
-const User = require('./../models/User');
+const Invite = require('../models/Invite');
+const User = require('../models/User');
+const { v4: uuidv4 } = require('uuid');
 
-// log in with credentials
+
 async function logIn(req, res) {
-    passport.authenticate('local')(req, res, () => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(req.user); // returns user, but is it a bad idea to return user with salt and hash parameters? // Todo ask
-    });
-}
-
-// log in with jwt
-async function logInJWT(req, res) {
-    res.send("pong");       // TODO
+    res.statusCode = 200;
+    res.json(req.user);     // user is inserted by passport into req so we simply send it back
 }
 
 
-async function signUp(req, res) {   // is this even async?
+async function signUp(req, res) {
     User.register(new User({
         email: req.body.email,
         name: req.body.name
     }),
-    req.body.password, (err, user) => {
+        req.body.password, (err, user) => {
+            if (err) {
+                if (err.name === 'UserExistsError') {
+                    res.statusCode = 409;
+                } else {
+                    res.statusCode = 400;
+                }
+                res.json({ err: err });
+            } else {
+                res.statusCode = 201;
+                res.json({
+                    success: true,
+                    status: 'Registration Successful!'
+                });
+            }
+        });
+}
+
+async function createInvite(req, res) {
+    const invite = new Invite({
+        invitee_email: req.body.invitee_email,
+        invited_email: req.body.invited_email,
+        expiration: Date.now() + 2 * 24 * 60 * 60 * 1000, // 2 days
+        token: uuidv4()
+    });
+    invite.save().then(() => {
+        res.statusCode = 201;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(invite);
+    }).catch(err => {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({
+            err: err
+        });
+    });
+}
+
+async function getInvite(req, res) {
+    Invite.findOne({
+        token: req.params.token
+    }, (err, invite) => {
         if (err) {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
             res.json({
                 err: err
             });
-        } else {
-            User.authenticate('local')(req, res, () => {
-                User.findOne({                  // TODO why do I request user from db and then do nothing?
-                    email: req.body.email
-                }, (err, user) => {
-                    // just returns message that registration was successful
-                    // we could return the created user so the integraters can do something with it
-                    res.statusCode = 201;
-                    res.setHeader('Content-Type', 'application/json');
-                    res.json({
-                        success: true,
-                        status: 'Registration Successful!'
-                    });
-                });
+        }
+        else if (!invite) {
+            res.statusCode = 404;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+                err: "Invite not found"
             });
+        }
+        else {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json(invite);
         }
     });
 }
 
-async function acceptInvite() {
 
+async function acceptInvite(req, res) {
+    // check if invite actually exists
+    Invite.findOne({
+        invitee_email: req.params.invitee_email,
+        invited_email: req.params.invited_email
+    }, async (err, invite) => {
+        if (err) {
+            res.statusCode = 500;
+            res.json({ err: err });
+        }
+        else if (!invite) {
+            res.statusCode = 404;
+            res.json({ err: "Invite not found" });
+        }
+        else {
+            if (!req.body.password) {
+                res.statusCode = 400;
+                res.json({ message: 'No password was proivided'});
+            } else {
+                const user = new User({
+                    email: req.params.invited_email,
+                    name: req.body.name,
+                    picturePath: req.body.picturePath
+                });
+                await user.setPassword(req.body.password); // passport will salt and hash password for us
+                await user.save().then(() => {
+                    // delete invitation
+                    Invite.deleteOne({
+                        invitee_email: req.params.invitee_email,
+                        invited_email: req.params.invited_email
+                    }).then(() => {
+                        res.statusCode = 200;
+                        res.json({
+                            message: 'Invite accepted',
+                            user: user
+                        });
+                    });
+                });
+            }
+        }
+    });
 }
 
+async function acceptInviteToken(req, res) {
+      // check if invite actually exists
+      Invite.findOne({
+        token: req.params.token
+    }, async (err, invite) => {
+        if (err) {
+            res.statusCode = 500;
+            res.json({ err: err });
+        }
+        else if (!invite) {
+            res.statusCode = 404;
+            res.json({ err: "Invite not found" });
+        }
+        else {
+            if (!req.body.password) {
+                res.statusCode = 400;
+                res.json({ message: 'No password was proivided'});
+            } else {
+                const user = new User({
+                    email: invite.invited_email,
+                    name: req.body.name,
+                    picturePath: req.body.picturePath
+                });
+                await user.setPassword(req.body.password); // passport will salt and hash password for us
+                await user.save().then(() => {
+                    // delete invitation
+                    Invite.deleteOne({ token: req.params.token }).then(() => {
+                        res.statusCode = 200;
+                        res.json({
+                            message: 'Invite accepted',
+                            user: user
+                        });
+                    });
+                });
+            }         
+        }
+    });
+}
+
+function authenticate(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.statusCode = 403;
+    res.json({ message: 'You need to log in!' });
+}
+
+function logout(req, res, next) {
+    req.logout((err) => {
+        if (err) {
+            return next;
+        }
+
+        res.statusCode = 200;
+        res.json({ message: 'You have been logged out'});
+    });
+}
 
 module.exports = {
     logIn,
-    logInJWT,
     signUp,
-    acceptInvite
+    createInvite,
+    getInvite,
+    acceptInvite,
+    acceptInviteToken,
+    authenticate,
+    logout
 };

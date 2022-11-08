@@ -19,7 +19,12 @@ const userSchema = new Schema({
 });
 
 userSchema.plugin(passportLocalMongoose, {
-    usernameField: 'email'
+    usernameField: 'email',
+    errorMessages: {
+        MissingUsernameError: 'No email was given',
+        MissingPasswordError: 'No password was given',
+        UserExistsError: 'A user with the given email already exists!',
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);
