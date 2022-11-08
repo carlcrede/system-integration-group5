@@ -71,7 +71,7 @@ const resolvers = {
         ).get(args.id),
 
         productAdditionalInfo: (_, args) => db.prepare(
-            `SELECT * FROM product_additional_info WHERE product_id = ?`
+            `SELECT * FROM products_additional_info WHERE product_id = ?`
         ).get(args.id),
         
         
@@ -80,7 +80,7 @@ const resolvers = {
             WHERE product_name LIKE '%${args.term}%' OR product_sub_title LIKE '%${args.term}%' OR product_description LIKE '%${args.term}%'`
         ).all(),
 
-        // this doesnot work
+        // TODO: this doesnot work, line 53 consider adding the boolean back, changed to args here, query looks good, but returns null, works in Datagrip
         getProductsByPrice: (_, args) => { 
             const orderedby: String = args.ascending ? 'ASC' : 'DESC';
             const minPriceQuery: String = (!args.maxPrice && args.minPrice) ? `WHERE price >= ${args.minPrice}` : ""
@@ -103,7 +103,7 @@ const resolvers = {
         },
         product_info: (product) => {
             return db.prepare(
-                `SELECT * FROM product_additional_info WHERE product_id = ?`
+                `SELECT * FROM products_additional_info WHERE product_id = ?`
             ).get(product.id);
         }
     }
