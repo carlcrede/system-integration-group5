@@ -57,7 +57,7 @@ class SqlitePipeline:
     def process_item(self, item, spider):
         if isinstance(item, ProductsItem):
             print('Processing product')
-            ## Define insert statement
+
             self.cur.execute("""
                 INSERT INTO products (id, product_name, product_sub_title, product_description,
                 main_category, sub_category, price, link, overall_rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -78,7 +78,34 @@ class SqlitePipeline:
             
         if isinstance(item, ProductImagesItem):
             print('Processing image')
+            
+            self.cur.execute("""
+                INSERT INTO product_images (product_id, image_url, alt_text, additional_info) VALUES (?, ?, ?, ?)
+            """,
+            (
+                item['product_id'],
+                item['image_url'],
+                item['alt_text'],
+                item['additional_info']
+            ))
+
+            ## Execute insert of data into database
+            self.con.commit()
+            
+            
         if isinstance(item, ProductsAdditionalInfo):
-            print(' Processingadditional info')
+            print('Processing additional info')
+            
+            self.cur.execute("""
+                INSERT INTO products_additional_info (product_id, choices, additional_info) VALUES (?, ?, ?)
+            """,
+            (
+                item['product_id'],
+                item['choices'],
+                item['additional_info']
+            ))
+
+            ## Execute insert of data into database
+            self.con.commit()
         
         return item
