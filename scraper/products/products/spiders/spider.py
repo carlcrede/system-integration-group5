@@ -43,6 +43,9 @@ class ItemSpider(scrapy.Spider):
     def parse(self, response):
         for product in response.css('div.offerList-item'):
             product_id = product.attrib['data-sp-itemid']
+            assert str(product_id).isnumeric()
+            product_id = int(product_id)
+             
             product_rating_classes = product.css('div.rating-stars').xpath("@class").extract()
             rating = None
             if len(product_rating_classes) > 0:
@@ -52,7 +55,7 @@ class ItemSpider(scrapy.Spider):
 
             item = ProductsItem()
             item['id'] = product_id
-            item['link'] = "https://www.idealo.co.uk/compare/" + product_id
+            item['link'] = "https://www.idealo.co.uk/compare/" + str(product_id)
             item['product_name'] = product.css('div.offerList-item-description div::text').get().strip()
             item['price'] = product.css('div.offerList-item-priceMin::text').extract()[1].strip()
             item['product_sub_title'] = product.css('span.description-part-one::text').get()
@@ -62,7 +65,7 @@ class ItemSpider(scrapy.Spider):
             item['sub_category'] = response.css('h1.offerList-title::text').get()
             yield item
             yield scrapy.Request(
-                url="https://www.idealo.co.uk/compare/"+product_id,
+                url="https://www.idealo.co.uk/compare/"+str(product_id),
                 headers=headers, 
                 callback=self.parse_item,
                 cb_kwargs=dict(product_id=product_id))
@@ -91,5 +94,5 @@ class ItemSpider(scrapy.Spider):
             choices_item['choices'] = variant.css(
                 'span.productVariants-listItemWrapperTitle-short::text'
             ).get().strip()
-            choices_item['additional_info'] = all_price_spans[1] + all_price_spans[2].strip()
+            choices_item['additional_info'] = '£' + all_price_spans[1] + all_price_spans[2].strip()
             yield choices_item
