@@ -1,12 +1,9 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
 import sqlite3
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+
+from .items import ProductImagesItem, ProductsAdditionalInfo, ProductsItem
 
 
 class SqlitePipeline:
@@ -58,4 +55,30 @@ class SqlitePipeline:
         """)
         
     def process_item(self, item, spider):
+        if isinstance(item, ProductsItem):
+            print('Processing product')
+            ## Define insert statement
+            self.cur.execute("""
+                INSERT INTO products (id, product_name, product_sub_title, product_description,
+                main_category, sub_category, price, link, overall_rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                item['id'],
+                item['product_name'],
+                item['product_sub_title'],
+                item['product_description'],
+                item['main_category'],
+                item['sub_category'],
+                item['price'],
+                item['link'],
+                item['overall_rating']
+            ))
+            ## Execute insert of data into database
+            self.con.commit()
+            
+        if isinstance(item, ProductImagesItem):
+            print('Processing image')
+        if isinstance(item, ProductsAdditionalInfo):
+            print(' Processingadditional info')
+        
         return item
