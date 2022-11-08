@@ -176,6 +176,7 @@ function logout(req, res, next) {
             return next;
         }
 
+        res.statusCode = 200;
         res.json({ message: 'You have been logged out'});
     });
 }

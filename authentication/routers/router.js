@@ -114,6 +114,8 @@ router.route('/signup')
  *   post:
  *     summary: Sends an invite in json format
  *     description: Send an invite to a user
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Returns an invite.
@@ -149,6 +151,9 @@ router.route('/invites')
  *         required: true
  *         type: string
  *         description: The invite token
+ * 
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Returns an object of an invite.
@@ -270,8 +275,26 @@ router.route('/invite/:invitee_email&:invited_email').post(userController.accept
  */
 router.route('/invite/:token').post(userController.acceptInviteToken);
 
-// if you logout and try to use the same routes with the same session id, then
-// you will not be allowed in
+/**
+ * @openapi
+ * /logout:
+ *   post:
+ *     summary: Logs the user out and ends the session
+ *     description: Ends the session. If the user tries to use the same session they will not be allowed to
+ *     
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns a success message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 router.route('/logout').post(userController.authenticate, userController.logout);
 
 module.exports = router;
