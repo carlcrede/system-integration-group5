@@ -61,11 +61,35 @@ class ItemSpider(scrapy.Spider):
             item['main_category'] = response.css('div.breadcrumb span')[-1].css('span.breadcrumb-linkText::text').get().strip()
             item['sub_category'] = response.css('h1.offerList-title::text').get()
             yield item
-            yield scrapy.Request(url="https://www.idealo.co.uk/compare/"+product_id, headers=headers, callback=self.parse_item)
+            yield scrapy.Request(
+                url="https://www.idealo.co.uk/compare/"+product_id,
+                headers=headers, 
+                callback=self.parse_item,
+                cb_kwargs=dict(product_id=product_id))
 
-    def parse_item(self, response):
-        # TODO: implement missing items
-        photo_item = ProductImagesItem()
-        choices_item = ProductsAdditionalInfo()
-        title = response.css('h1.oopStage-title span::text').get()
-        yield {title: title}
+    def parse_item(self, response, product_id):
+        single_image = response.css('div.simple-carousel-item')
+        if single_image:
+            image = single_image.css('img')
+            photo_item = ProductImagesItem()
+            photo_item['product_id'] = product_id
+            photo_item['image_url'] = 'https:' + image.attrib['src']
+            photo_item['alt_text'] = image.attrib['alt']
+            photo_item['additional_info'] = 'main'
+            yield photo_item
+        for index, image in enumerate(response.css('img.oopStage-galleryCollageImage')):
+            photo_item = ProductImagesItem()
+            photo_item['product_id'] = product_id
+            photo_item['image_url'] = 'https:' + image.attrib['src']
+            photo_item['alt_text'] = image.attrib['alt']
+            photo_item['additional_info'] = 'main' if index == 0 else 'gallery' 
+            yield photo_item
+        for variant in response.css('div.productVariants-listItem'):
+            all_price_spans = variant.css('div.price span::text').extract()
+            choices_item = ProductsAdditionalInfo()
+            choices_item['product_id'] = product_id
+            choices_item['choices'] = variant.css(
+                'span.productVariants-listItemWrapperTitle-short::text'
+            ).get().strip()
+            choices_item['additional_info'] = all_price_spans[1] + all_price_spans[2].strip()
+            yield choices_item
