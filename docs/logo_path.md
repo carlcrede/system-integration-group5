@@ -1,0 +1,2 @@
+## How to use the logo
+The logo is served with AWS CloudFront. It's as easy as visting the public url: [Logo](https://d3uug9v35qw8k4.cloudfront.net/logo.webp). You can use it your website in different ways, e.g. in a `<img>` tag.
