@@ -1,4 +1,5 @@
 import sqlite3
+import ftplib
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
@@ -109,3 +110,14 @@ class SqlitePipeline:
             self.con.commit()
         
         return item
+    
+    def close_spider(self, spider):
+        print('Establishing FTP connection')
+        # TODO: replace by actual connection
+        session = ftplib.FTP('server.address.com','USERNAME','PASSWORD')
+        products_file = open('products.db','rb')
+        session.storbinary('STOR products.db', products_file)     # STOR creates or updates file
+        # close file and FTP
+        products_file.close()                                    
+        session.quit()        
+        print('FTP sending finished')
