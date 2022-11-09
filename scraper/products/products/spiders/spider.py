@@ -35,7 +35,10 @@ class ItemSpider(scrapy.Spider):
             'https://www.idealo.co.uk/cat/9132/',
             'https://www.idealo.co.uk/cat/3406/',
             'https://www.idealo.co.uk/cat/6392/',
-            'https://www.idealo.co.uk/cat/6773/'
+            'https://www.idealo.co.uk/cat/6773/',
+            'https://www.idealo.co.uk/cat/16073/',
+            'https://www.idealo.co.uk/cat/3019/',
+            'https://www.idealo.co.uk/cat/3018/'
         ]
         for url in urls:
             yield scrapy.Request(url=url, headers=headers, callback=self.parse)
