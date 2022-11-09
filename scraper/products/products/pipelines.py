@@ -1,8 +1,9 @@
 import sqlite3
-import ftplib
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+from ftplib import FTP
+from pathlib import Path
 
 from .items import ProductImagesItem, ProductsAdditionalInfo, ProductsItem
 
@@ -113,11 +114,10 @@ class SqlitePipeline:
     
     def close_spider(self, spider):
         print('Establishing FTP connection')
+        file_path = Path('products.db')
+        
         # TODO: replace by actual connection
-        session = ftplib.FTP('server.address.com','USERNAME','PASSWORD')
-        products_file = open('products.db','rb')
-        session.storbinary('STOR products.db', products_file)     # STOR creates or updates file
-        # close file and FTP
-        products_file.close()                                    
-        session.quit()        
+        with FTP('server.address.com', 'USER', 'PWD') as ftp, open(file_path, 'rb') as file:
+            ftp.storbinary(f'STOR {file_path.name}', file)
+           
         print('FTP sending finished')
