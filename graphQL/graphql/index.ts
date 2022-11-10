@@ -52,18 +52,28 @@ const typeDefs = gql`
         choices: String
         additional_info: String
     }
+    type Category {
+        main_category: String
+    }
+    type Subcategory {
+        sub_category: String
+    }
 
     type Query {
         product(id: ID!): Product
         products: [Product]
         productImage(id: ID!): ProductImage
         productAdditionalInfo(id: ID!): ProductAdditionalInfo
+        categories: [Category]
+        subcategories: [Subcategory]
         getProductsBySearchTerm(term:String!): [Product]
         getProductsByPrice(maxPrice:Float, minPrice:Float): [Product]
+        getProductsByCategory(category:String!): [Product]
+        getProductsBySubcategory(subcategory:String!): [Product]
     }
 `;
 
-// TODO: categories, subcategories, getProductsby(sub)category, getProductByRating(int 0-100)
+// TODO: getProductByRating(int 0-100)
 
 const resolvers = {
     Query: {
@@ -73,6 +83,14 @@ const resolvers = {
 
         products: (_,) => db.prepare(
             `SELECT * FROM products`
+        ).all(),
+
+        categories: (_,) => db.prepare(
+            `SELECT DISTINCT main_category FROM products`
+        ).all(),
+
+        subcategories: (_,) => db.prepare(
+            `SELECT DISTINCT sub_category FROM products`
         ).all(),
 
         productImage: (_, args) => db.prepare(
@@ -88,6 +106,14 @@ const resolvers = {
             `SELECT * FROM products
             WHERE product_name LIKE '%${args.term}%' OR product_sub_title LIKE '%${args.term}%' OR product_description LIKE '%${args.term}%'`
         ).all(),
+
+        getProductsByCategory: (_,args) => db.prepare(
+            `SELECT * FROM products
+            WHERE main_category LIKE '%${args.category}%'`).all(),
+
+        getProductsBySubcategory: (_,args) => db.prepare(
+            `SELECT * FROM products
+            WHERE sub_category LIKE '%${args.subcategory}%'`).all(),
 
         // TODO: this doesnot work, line 53 consider adding the boolean back, changed to args here, query looks good, but returns null, works in Datagrip
         getProductsByPrice: (_, args) => { 
