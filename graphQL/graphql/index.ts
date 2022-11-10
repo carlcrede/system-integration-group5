@@ -33,7 +33,7 @@ const typeDefs = gql`
         product_description: String
         main_category: String
         sub_category: String
-        price: Float
+        price: String
         link: String
         overall_rating: Float
         product_image: ProductImage
@@ -70,10 +70,9 @@ const typeDefs = gql`
         getProductsByPrice(maxPrice:Float, minPrice:Float): [Product]
         getProductsByCategory(category:String!): [Product]
         getProductsBySubcategory(subcategory:String!): [Product]
+        getProductsByRating(minRating:Float, maxRating:Float): [Product]
     }
 `;
-
-// TODO: getProductByRating(int 0-100)
 
 const resolvers = {
     Query: {
@@ -115,20 +114,32 @@ const resolvers = {
             `SELECT * FROM products
             WHERE sub_category LIKE '%${args.subcategory}%'`).all(),
 
-        // TODO: this doesnot work, line 53 consider adding the boolean back, changed to args here, query looks good, but returns null, works in Datagrip
         getProductsByPrice: (_, args) => { 
+            // TODO: not in the signature rn
             const orderedby: String = args.ascending ? 'ASC' : 'DESC';
             const minPriceQuery: String = (!args.maxPrice && args.minPrice) ? `WHERE price >= ${args.minPrice}` : ""
             const maxPriceQuery: String = (args.maxPrice && !args.minPrice) ? `WHERE price <= ${args.maxPrice}` : ""
             const bothPriceQuery: String = (args.maxPrice && args.minPrice) ? `WHERE price <= ${args.maxPrice} AND price >= ${args.minPrice}` : ""
-            db.prepare(
-            `SELECT * FROM products
+            return db.prepare(
+            `SELECT * FROM products cast(price as float)
             ${minPriceQuery}
             ${bothPriceQuery}
-            ${maxPriceQuery}
-            ORDER BY price ${orderedby}`
+            ${maxPriceQuery}`
         ).all()
+        // ORDER BY price ${orderedby}
     },
+
+        getProductsByRating: (_,args) => { 
+            const minRatingQuery: String = (!args.maxRating && args.minRating) ? `WHERE overall_rating >= ${args.minRating}` : ""
+            const maxRatingQuery: String = (args.maxRating && !args.minRating) ? `WHERE overall_rating <= ${args.maxRating}` : ""
+            const bothRatingQuery: String = (args.maxRating && args.minRating) ? `WHERE overall_rating <= ${args.maxRating} AND overall_rating >= ${args.minRating}` : ""
+            return db.prepare(
+                `SELECT * FROM products 
+                ${minRatingQuery}
+                ${bothRatingQuery}
+                ${maxRatingQuery}`
+            ).all()
+        },
     },
     Product: {
         product_image: (product) => {
