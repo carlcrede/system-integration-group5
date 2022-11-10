@@ -67,7 +67,7 @@ const typeDefs = gql`
         categories: [Category]
         subcategories: [Subcategory]
         getProductsBySearchTerm(term:String!): [Product]
-        getProductsByPrice(maxPrice:Float, minPrice:Float): [Product]
+        getProductsByPrice(ascending: Boolean, maxPrice:Float, minPrice:Float): [Product]
         getProductsByCategory(category:String!): [Product]
         getProductsBySubcategory(subcategory:String!): [Product]
         getProductsByRating(ascending: Boolean, minRating:Float, maxRating:Float): [Product]
@@ -115,18 +115,20 @@ const resolvers = {
             WHERE sub_category LIKE '%${args.subcategory}%'`).all(),
 
         getProductsByPrice: (_, args) => { 
-            // TODO: not in the signature rn
             const orderedby: String = args.ascending ? 'ASC' : 'DESC';
-            const minPriceQuery: String = (!args.maxPrice && args.minPrice) ? `WHERE price >= ${args.minPrice}` : ""
-            const maxPriceQuery: String = (args.maxPrice && !args.minPrice) ? `WHERE price <= ${args.maxPrice}` : ""
-            const bothPriceQuery: String = (args.maxPrice && args.minPrice) ? `WHERE price <= ${args.maxPrice} AND price >= ${args.minPrice}` : ""
+            const minPriceQuery: String = (!args.maxPrice && args.minPrice) ? `WHERE pricee >= ${args.minPrice}` : ""
+            const maxPriceQuery: String = (args.maxPrice && !args.minPrice) ? `WHERE pricee <= ${args.maxPrice}` : ""
+            const bothPriceQuery: String = (args.maxPrice && args.minPrice) ? `WHERE pricee <= ${args.maxPrice} AND pricee >= ${args.minPrice}` : ""
             return db.prepare(
-            `SELECT * FROM products cast(price as float)
+            `SELECT p.*, CAST(REPLACE(p.price,'£','') as decimal) as pricee
+            FROM products p
             ${minPriceQuery}
             ${bothPriceQuery}
-            ${maxPriceQuery}`
+            ${maxPriceQuery}
+            ORDER BY pricee ${orderedby}`
         ).all()
-        // ORDER BY price ${orderedby}
+
+        
     },
 
         getProductsByRating: (_,args) => { 
