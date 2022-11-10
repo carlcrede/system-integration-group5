@@ -1,5 +1,5 @@
 # Logs
-.vscode/
+
 logs
 *.log
 npm-debug.log*
@@ -98,3 +98,10 @@ local.settings.json
 __blobstorage__
 __queuestorage__
 __azurite_db*__.json
+
+# VSCode
+.vscode/
+
+# products.db, insert.ts
+products.db
+insert.ts
