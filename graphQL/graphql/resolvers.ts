@@ -45,12 +45,13 @@ const resolvers = {
             const maxPriceQuery: String = (args.maxPrice && !args.minPrice) ? `WHERE pricee <= ${args.maxPrice}` : ""
             const bothPriceQuery: String = (args.maxPrice && args.minPrice) ? `WHERE pricee <= ${args.maxPrice} AND pricee >= ${args.minPrice}` : ""
             return db.prepare(
-                `SELECT p.*, CAST(REPLACE(p.price,'£','') as decimal) as pricee
-            FROM products p
-            ${minPriceQuery}
-            ${bothPriceQuery}
-            ${maxPriceQuery}
-            ORDER BY pricee ${orderedby}`
+                `SELECT p.*,
+                CAST(REPLACE(REPLACE(p.price,'£',''), ',', '') as decimal) as pricee
+                FROM products p
+                ${minPriceQuery}
+                ${bothPriceQuery}
+                ${maxPriceQuery}
+                ORDER BY pricee ${orderedby}`
             ).all()
         },
 
