@@ -70,7 +70,7 @@ const typeDefs = gql`
         getProductsByPrice(maxPrice:Float, minPrice:Float): [Product]
         getProductsByCategory(category:String!): [Product]
         getProductsBySubcategory(subcategory:String!): [Product]
-        getProductsByRating(minRating:Float, maxRating:Float): [Product]
+        getProductsByRating(ascending: Boolean, minRating:Float, maxRating:Float): [Product]
     }
 `;
 
@@ -130,6 +130,7 @@ const resolvers = {
     },
 
         getProductsByRating: (_,args) => { 
+            const orderedby: String = args.ascending ? 'ASC' : 'DESC';
             const minRatingQuery: String = (!args.maxRating && args.minRating) ? `WHERE overall_rating >= ${args.minRating}` : ""
             const maxRatingQuery: String = (args.maxRating && !args.minRating) ? `WHERE overall_rating <= ${args.maxRating}` : ""
             const bothRatingQuery: String = (args.maxRating && args.minRating) ? `WHERE overall_rating <= ${args.maxRating} AND overall_rating >= ${args.minRating}` : ""
@@ -137,7 +138,8 @@ const resolvers = {
                 `SELECT * FROM products 
                 ${minRatingQuery}
                 ${bothRatingQuery}
-                ${maxRatingQuery}`
+                ${maxRatingQuery}
+                ORDER BY overall_rating ${orderedby}`
             ).all()
         },
     },
