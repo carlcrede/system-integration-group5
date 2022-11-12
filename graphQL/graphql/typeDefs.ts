@@ -49,6 +49,10 @@ const typeDefs = gql`
         getProductsBySubcategory(subcategory:String!): [Product]
         getProductsByRating(ascending: Boolean, minRating:Float, maxRating:Float): [Product]
     }
+
+    type Subscription {
+        newDatabase: String!
+    }
 `;
 
 export default typeDefs;

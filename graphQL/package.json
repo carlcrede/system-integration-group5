@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "@apollo/server": "^4.1.1",
+    "@graphql-tools/schema": "^9.0.9",
     "apollo-server-azure-functions": "^3.10.3",
     "better-sqlite3": "^7.6.2",
     "cross-fetch": "^3.1.5",
     "express": "^4.18.2",
-    "graphql": "^16.6.0"
+    "graphql": "^16.6.0",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-ws": "^5.11.2",
+    "ws": "^8.11.0"
   },
   "devDependencies": {
     "@azure/functions": "^3.0.0",
