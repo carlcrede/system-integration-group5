@@ -6,7 +6,10 @@ name: Build and deploy Node.js app to Azure Web App - Si-products-graphql3
 on:
   push:
     branches:
-      - feature/subscription
+      - main
+    paths:
+      - graphQL/**
+      - github/workflows/feature-subscription_si-products-graphql3.yml
   workflow_dispatch:
 
 jobs:
