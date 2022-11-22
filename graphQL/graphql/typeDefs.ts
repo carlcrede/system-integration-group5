@@ -49,7 +49,7 @@ const typeDefs = `#graphql
     }
 
     type Subscription {
-        newDatabase: String!
+        newDatabase: String
     }
 `;
 
