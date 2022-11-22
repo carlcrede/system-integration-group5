@@ -2,11 +2,12 @@
   "name": "si-graphql-function",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "prestart": "npm run build",
-    "start": "npm run prestart && node ./dist/graphql/index.js",
+    "start": "node ./dist/graphql/index.js",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
@@ -26,7 +27,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.1",
-    "@types/node": "16.x",
+    "@types/node": "18.x",
     "typescript": "^4.0.0"
   }
 }

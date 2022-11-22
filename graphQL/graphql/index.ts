@@ -26,10 +26,16 @@ const httpServer = createServer(app);
 
 // const serverCleanup = useServer({ schema }, wsServer);
 
-// const server = new ApolloServer({
-//     schema,
-//     csrfPrevention: true,
-// });
-httpServer.listen(3000, () => {
+const server = new ApolloServer({
+    schema,
+    csrfPrevention: true,
+});
+
+await server.start()
+app.use('/graphql', expressMiddleware(server))
+app.get('/hello', (req,res) => {
+    res.send("hello");
+});
+httpServer.listen(8080, () => {
     console.log("server on")
 })

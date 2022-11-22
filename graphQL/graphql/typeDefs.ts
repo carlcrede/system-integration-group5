@@ -1,6 +1,4 @@
-import { gql } from 'apollo-server-azure-functions';
-
-const typeDefs = gql`
+const typeDefs = `#graphql
     type Product {
         id: ID!
         product_name: String!
