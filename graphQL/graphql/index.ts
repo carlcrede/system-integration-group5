@@ -9,6 +9,7 @@ import { createServer } from 'http';
 import express from 'express';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { makeExecutableSchema } from '@graphql-tools/schema';
+import bodyParser from 'body-parser';
 
 setInterval(async () => {
     await db_connect();
@@ -31,11 +32,17 @@ const server = new ApolloServer({
     csrfPrevention: true,
 });
 
-await server.start()
-app.use('/graphql', expressMiddleware(server))
-app.get('/hello', (req,res) => {
-    res.send("hello");
-});
-httpServer.listen(8080, () => {
-    console.log("server on")
-})
+async function start() {
+    await server.start();
+    await db_connect();
+}
+function finish() {
+    app.use('/graphql', bodyParser.json(), expressMiddleware(server));
+    app.get('/hello', (req,res) => {
+        res.send("hello");
+    });
+    httpServer.listen(8080, () => {
+        console.log("server on")
+    });
+}
+start().then(() =>  finish());

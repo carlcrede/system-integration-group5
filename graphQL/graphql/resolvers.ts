@@ -4,20 +4,20 @@ import { PubSub } from "graphql-subscriptions";
 export const pubsub: PubSub = new PubSub();
 
 const resolvers = {
-    Subscription: {
-        newDatabase: {
-            subscribe: (_, __, { pubsub: PubSub }) => pubsub.asyncIterator("NEW_DB")
-        }
-    },
+    // Subscription: {
+    //     newDatabase: {
+    //         subscribe: (_, __, { pubsub: PubSub }) => pubsub.asyncIterator("NEW_DB")
+    //     }
+    // },
     Query: {
         product: (_, args) => db.prepare(
             `SELECT * FROM products WHERE products.id = ?`
         ).get(args.id),
 
         products: (_, __, pubsub: PubSub) => {
-            pubsub.publish("NEW_DB", {
-                message: "new DB"
-            })
+            // pubsub.publish("NEW_DB", {
+            //     message: "new DB"
+            // })
             return db.prepare(
                 `SELECT * FROM products`
             ).all()
