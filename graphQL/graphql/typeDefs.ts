@@ -1,6 +1,4 @@
-import { gql } from 'apollo-server-azure-functions';
-
-const typeDefs = gql`
+const typeDefs = `#graphql
     type Product {
         id: ID!
         product_name: String!
@@ -48,6 +46,10 @@ const typeDefs = gql`
         getProductsByCategory(category:String!): [Product]
         getProductsBySubcategory(subcategory:String!): [Product]
         getProductsByRating(ascending: Boolean, minRating:Float, maxRating:Float): [Product]
+    }
+
+    type Subscription {
+        newDatabase: String
     }
 `;
 

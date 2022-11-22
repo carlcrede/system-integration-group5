@@ -1,14 +1,24 @@
 import { db } from "./db";
+import { PubSub } from "graphql-subscriptions";
+
+export const pubsub: PubSub = new PubSub();
 
 const resolvers = {
+    Subscription: {
+        newDatabase: {
+            subscribe: (_, __) => pubsub.asyncIterator("NEW_DB")
+        }
+    },
     Query: {
         product: (_, args) => db.prepare(
             `SELECT * FROM products WHERE products.id = ?`
         ).get(args.id),
 
-        products: (_,) => db.prepare(
-            `SELECT * FROM products`
-        ).all(),
+        products: (_, __) => {
+            return db.prepare(
+                `SELECT * FROM products`
+            ).all()
+        },
 
         categories: (_,) => db.prepare(
             `SELECT DISTINCT main_category FROM products`
