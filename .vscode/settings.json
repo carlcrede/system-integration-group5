@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/70425ba0-63e1-4f2b-94b6-3fc3f5e18a6e/AppServices/subscriptions/70425ba0-63e1-4f2b-94b6-3fc3f5e18a6e/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/si-authentication",
+    "appService.deploySubpath": "authentication"
+}
