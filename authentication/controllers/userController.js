@@ -173,21 +173,36 @@ async function acceptInvite(req, res) {
         else {
             const invite = wishlist.invites.find(invite => invite.token === req.params.token);
             if (invite) {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                invite.status = "accepted";
-                wishlist.save().then(() => {
-                    res.statusCode = 201;
-                    res.setHeader('Content-Type', 'application/json');
-                    res.json(invite);
-                }
-                ).catch(err => {
-                    res.statusCode = 404;
+                if (invite.status === 'accepted') {
+                    res.statusCode = 409;
                     res.setHeader('Content-Type', 'application/json');
                     res.json({
-                        err: err
+                        err: "Invite already accepted"
                     });
-                });
+                }
+                else if (invite.status === 'expired') {
+                    res.statusCode = 410;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json({
+                        err: "Invite expired"
+                    });
+                }
+                else {
+                    invite.status = 'accepted';
+                    wishlist.save().then(() => {
+                        res.statusCode = 200;
+                        res.setHeader('Content-Type', 'application/json');
+                        res.json(invite);
+                    }
+                    ).catch(err => {
+                        res.statusCode = 404;
+                        res.setHeader('Content-Type', 'application/json');
+                        res.json({
+                            err: err
+                        });
+                    }
+                    );
+                }
             }
             else {
                 res.statusCode = 404;
