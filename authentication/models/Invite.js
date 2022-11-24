@@ -1,20 +1,24 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const inviteSchema = new Schema({
-    invitee_email: {
+    id: ObjectId,
+    email: {
         type: String,
-        required: [true, 'Please provide invitee email']
+        required: [true, 'Please provide email']
     },
-    invited_email: {
+    status: {
         type: String,
-        required: [true, 'Please provide invited email']
+        required: [true, 'Please provide status']
+    },    
+    expiresAt: {
+        type: Date,
+        required: [true, 'Please provide expiration date']
     },
     token: {
         type: String,
-    },
-    expiration: {
-        type: Date
+        required: [true, 'Please provide token']
     }
 });
 
