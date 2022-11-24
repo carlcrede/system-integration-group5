@@ -155,9 +155,6 @@ router.route('/signup')
  *               description:
  *                  type: string
  *                  default: "Christmas gifts"
- *               invites:
- *                  type: array
- *                  default: []
  */
 router.route('/wishlists')
     .post(userController.authenticate, userController.createWishlist);
