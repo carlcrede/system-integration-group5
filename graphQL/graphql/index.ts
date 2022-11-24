@@ -1,9 +1,8 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import typeDefs from './typeDefs';
-import resolvers, { pubsub } from './resolvers';
+import resolvers from './resolvers';
 import db_connect from './db';
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
@@ -34,7 +33,6 @@ const server = new ApolloServer({
     plugins: [
         // Proper shutdown for the HTTP server.
         ApolloServerPluginDrainHttpServer({ httpServer }),
-    
         // Proper shutdown for the WebSocket server.
         {
           async serverWillStart() {
