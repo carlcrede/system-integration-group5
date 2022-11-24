@@ -218,9 +218,6 @@ router.route('/wishlists')
  *               email:
  *                 type: string
  *                 default: "kimon@email.com"
- *               status:
- *                 type: string
- *                 default: "pending"
  */
 router.route('/wishlists/:id/invites')
     .post(userController.authenticate, userController.createInvite);

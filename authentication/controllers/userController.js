@@ -130,7 +130,7 @@ async function createInvite(req, res) {
         else {
             const invite = new Invite({
                 email: req.body.email,
-                status: req.body.status,
+                status: 'pending',
                 expiresAt: Date.now() + 2 * 24 * 60 * 60 * 1000, // now + 2 days
                 token: uuidv4(),
             });
