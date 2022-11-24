@@ -9,6 +9,7 @@ const resolvers = {
             subscribe: (_, __) => pubsub.asyncIterator("NEW_DB")
         }
     },
+    
     Query: {
         product: (_, args) => db.prepare(
             `SELECT * FROM products WHERE products.id = ?`
