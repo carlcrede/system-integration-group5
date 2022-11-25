@@ -1,12 +1,15 @@
+import os
 import sqlite3
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from ftplib import FTP
 from pathlib import Path
+from dotenv import load_dotenv
 
 from .items import ProductImagesItem, ProductsAdditionalInfo, ProductsItem
 
+load_dotenv()
 
 class SqlitePipeline:
     def __init__(self) -> None:
@@ -19,7 +22,7 @@ class SqlitePipeline:
         # create products table
         self.cur.execute("""
         CREATE TABLE IF NOT EXISTS products(
-            id INTEGER NOT NULL PRIMARY KEY,
+            id TEXT NOT NULL PRIMARY KEY,
             product_name TEXT,
             product_sub_title TEXT,
             product_description TEXT,
@@ -27,18 +30,18 @@ class SqlitePipeline:
             sub_category TEXT,
             price TEXT,
             link TEXT,
-            overall_rating INTEGER
+            overall_rating TEXT
         )
         """)
         
         # create product_images table
         self.cur.execute("""
             CREATE TABLE IF NOT EXISTS product_images(
-                product_id INTEGER,
+                product_id TEXT,
                 image_url TEXT,
                 alt_text TEXT,
                 additional_info TEXT,
-                PRIMARY KEY (product_id, alt_text),
+                PRIMARY KEY (product_id, image_url),
                 FOREIGN KEY (product_id) REFERENCES products (id) 
                     ON DELETE CASCADE
             )
@@ -47,10 +50,10 @@ class SqlitePipeline:
         # create products_additional_info table
         self.cur.execute("""
             CREATE TABLE IF NOT EXISTS products_additional_info(
-                product_id INTEGER,
+                product_id TEXT,
                 choices TEXT,
                 additional_info TEXT,
-                PRIMARY KEY (product_id, choices),
+                PRIMARY KEY (product_id, choices, additional_info),
                 FOREIGN KEY (product_id) REFERENCES products (id) 
                     ON DELETE CASCADE
             )
@@ -114,10 +117,9 @@ class SqlitePipeline:
     
     def close_spider(self, spider):
         print('Establishing FTP connection')
-        file_path = Path('products.db')
+        file_path = sorted(Path('.').glob('products.db'))[0]
         
-        # TODO: replace by actual connection
-        with FTP('server.address.com', 'USER', 'PWD') as ftp, open(file_path, 'rb') as file:
+        with FTP('172.104.159.213', 'ftpuser', os.environ.get("FTP_PASSWORD")) as ftp, open(file_path, 'rb') as file:
             ftp.storbinary(f'STOR {file_path.name}', file)
            
         print('FTP sending finished')
