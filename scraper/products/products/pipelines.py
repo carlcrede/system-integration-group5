@@ -120,6 +120,7 @@ class SqlitePipeline:
         file_path = sorted(Path('.').glob('products.db'))[0]
         
         with FTP('172.104.159.213', 'ftpuser', os.environ.get("FTP_PASSWORD")) as ftp, open(file_path, 'rb') as file:
+            ftp.cwd('files')
             ftp.storbinary(f'STOR {file_path.name}', file)
            
         print('FTP sending finished')
