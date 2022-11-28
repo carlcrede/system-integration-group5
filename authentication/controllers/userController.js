@@ -37,6 +37,20 @@ async function signUp(req, res) {
         });
 }
 
+async function getUserByEmail(email) {
+    User.findOne({
+        email: email
+    }, (err, user) => {
+        if (err) {
+            return null;
+        }
+        else {
+            return user;
+        }
+    }
+    );
+}
+
 async function createWishlist(req, res) {
     const wishlist = new Wishlist({
         title: req.body.name,
@@ -80,6 +94,12 @@ async function getWishlist(req, res) {
             res.setHeader('Content-Type', 'application/json');
             res.json(wishlist);
         }
+    });
+}
+
+function getCurrentWishlist(id) {
+    return Wishlist.findOne({
+        _id: new ObjectId(id)
     });
 }
 
@@ -171,7 +191,7 @@ async function acceptInvite(req, res) {
             });
         }
         else {
-            const invite = wishlist.invites.find(invite => invite.token === req.params.token);
+            const invite = wishlist.invites.find(invite => invite.token === req.params.token && invite.email === req.user.email);
             if (invite) {
                 if (invite.status === 'accepted') {
                     res.statusCode = 409;
@@ -238,8 +258,10 @@ module.exports = {
     signUp,
     logIn,
     logout,
+    getUserByEmail,
     createWishlist,
     getWishlist,
+    getCurrentWishlist,
     getAllWishlists,
     createInvite,
     acceptInvite,

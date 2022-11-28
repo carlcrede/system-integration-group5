@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Passport example</title>
+</head>
+
+<body>
+
+  <p>Authenticated!</p>
+  <!-- <p>Socket ID: <span id="socketId"></span></p> -->
+  <p><b>Email: </b><span id="email"></span></p>
+  <p><b>Name: </b><span id="name"></span></p>
+  <ul><b>Online</b><span id="online"></span></ul>
+  <ul><b>Offline</b><span id="offline"></span></ul>
+  <ul><b>Not Registered</b><span id="notRegistered"></span></ul>
+  <form action="/logout" method="post">
+    <div>
+      <input type="submit" value="Log out" />
+    </div>
+  </form>
+  <input id="room" type="text" />
+  <button id="joinRoom" onclick="joinRoom()">Join Room</button>
+  <br>
+  <br>
+  <input id="message" type="text" name="message" />
+  <button id="sendMessage" onclick="sendMessage()">Send message</button>
+  <br>
+  <br>
+  <ul id="messages"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io("http://localhost:8080");
+    const socketIdSpan = document.getElementById("socketId");
+    const emailSpan = document.getElementById("email");
+    const nameSpan = document.getElementById("name");
+    const onlineList = document.getElementById("online");
+    const offlineList = document.getElementById("offline");
+    const notRegisteredList = document.getElementById("notRegistered");
+    function joinRoom() {
+      const roomNumber = document.getElementById("room").value;
+      socket.emit("joinroom", roomNumber);
+    }
+
+    function sendMessage() {
+      const roomNumber = document.getElementById("room").value;
+      socket.emit("message", { room: roomNumber, message: document.getElementById("message").value });
+    }
+
+    socket.on("message", (data) => {
+      console.log(data.user + ": " + data.message);
+      const li = document.createElement("li");
+      li.innerText = data.user + ": " + data.message;
+      document.getElementById("messages").appendChild(li);
+    });
+
+    socket.on('room', (data) => {
+      console.log(data + " joined the room");
+    });
+
+    // socket.on('connect', () => {
+    //   socketIdSpan.innerText = socket.id;
+    // });
+
+    socket.on('name', (name) => {
+      nameSpan.innerText = name;
+    });
+
+    socket.on('email', (email) => {
+      emailSpan.innerText = email;
+      // socket.sendMessage('/invitedFriends/:email', email);
+    });
+
+    socket.on('online', (data) => {
+      while (onlineList.hasChildNodes()) {
+        onlineList.removeChild(onlineList.firstChild);
+      }
+      let map = new Map(JSON.parse(data));
+      for (let key of map.keys()) {
+        var listElement = document.createElement("LI");
+        var you = '';
+        if (key === emailSpan.innerText) {
+          you = ' (you)';
+        }
+        var textnode = document.createTextNode(map.get(key) + you);
+        listElement.style.color = "green";
+        listElement.appendChild(textnode);
+        onlineList.appendChild(listElement);
+      }
+    });
+
+    socket.on('offline', (data) => {
+      while (offlineList.hasChildNodes()) {
+        offlineList.removeChild(offlineList.firstChild);
+      }
+      let map = new Map(JSON.parse(data));
+      for (let value of map.values()) {
+        var listElement = document.createElement("LI");
+        var textnode = document.createTextNode(value);
+        listElement.style.color = "red";
+        listElement.appendChild(textnode);
+        offlineList.appendChild(listElement);
+      }
+    });
+
+    socket.on('notRegistered', (data) => {
+      while (notRegisteredList.hasChildNodes()) {
+        notRegisteredList.removeChild(notRegisteredList.firstChild);
+      }
+      let map = new Map(JSON.parse(data));
+      for (let key of map.keys()) {
+        var listElement = document.createElement("LI");
+        var textnode = document.createTextNode(key);
+        listElement.style.color = "black";
+        listElement.appendChild(textnode);
+        notRegisteredList.appendChild(listElement);
+      }
+    });
+
+  </script>
+</body>
+
+</html>

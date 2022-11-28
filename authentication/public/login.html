@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Passport example</title>
+</head>
+
+<body>
+    <p id="title">Not authenticated</p>
+    <!-- <form> -->
+    <div>
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" value="email@email.com" />
+        <br />
+    </div>
+    <div>
+        <label for="email">Password:</label>
+        <input id="password" type="password" name="password" value="123" />
+    </div>
+    <p id="info"></p>
+    <div>
+        <input type="submit" value="Submit" onclick="login()" />
+    </div>
+    <!-- </form> -->
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+
+        const url = 'http://localhost:8080/login';
+
+        async function login() {
+
+            const headers = {
+                "content-type": "application/json",
+                "Accept": "application/json"
+            };
+            const data = {
+                "email": document.getElementById("email").value,
+                "password": document.getElementById("password").value
+            }
+
+            result = await axios({
+                url: url,
+                method: "post",
+                headers: headers,
+                data: data
+            }).then(response => {
+                return window.location.href = 'index.html';
+            }).catch(error => {
+                console.log(error);
+                document.getElementById("info").innerText = "Error: " + error.response.statusText;
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>

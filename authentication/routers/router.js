@@ -247,6 +247,6 @@ router.route('/wishlists/:id/invites')
  *         description: Returns an object of an invite.
  */
  router.route('/wishlists/:id/invites/:token')
- .get(userController.acceptInvite);
+ .get(userController.authenticate, userController.acceptInvite);
 
 module.exports = router;
