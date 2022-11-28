@@ -38,17 +38,9 @@ async function signUp(req, res) {
 }
 
 async function getUserByEmail(email) {
-    User.findOne({
+    return User.findOne({
         email: email
-    }, (err, user) => {
-        if (err) {
-            return null;
-        }
-        else {
-            return user;
-        }
-    }
-    );
+    });
 }
 
 async function createWishlist(req, res) {

@@ -52,6 +52,7 @@ mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: tr
 
 // Endpoints for testing
 //
+//
 app.get("/", (req, res) => {
     const isAuthenticated = !!req.user;
     if (isAuthenticated) {
@@ -84,6 +85,7 @@ app.post("/logout", (req, res) => {
         res.redirect("/login.html");
     });
 });
+//
 //
 // Endpoints for testing
 
@@ -151,8 +153,16 @@ io.on('connection', (socket) => {
 
     socket.on('joinroom', (roomId) => {
 
-        onlineFriends.set(socket.request.user.email, socket.request.user.name)
-        offlineFriends.delete(socket.request.user.email)
+        if (!roomId) {
+            room[roomId] = {};
+            socket.join(roomId);
+            io.in(roomId).emit("room", socket.request.user.name);
+            getWishlistUsers();
+        } else {
+            socket.join(roomId);
+            io.in(roomId).emit("room", socket.request.user.name);
+            getWishlistUsers();
+        }
 
         function getWishlistUsers() {
             try {
@@ -165,10 +175,8 @@ io.on('connection', (socket) => {
                             console.log("api: " + invite.email + " not registered");
                         } else if (invite.status === 'accepted') {
                             userController.getUserByEmail(invite.email).then((user) => {
-                                if (user && user.email === socket.request.user.email) {  // TODO FIX!!!
-                                    offlineFriends.set(user.email, user.name) // TODO FIX!!!
-                                    console.log("api: " + user.name + " registered");  // TODO FIX!!!
-                                }
+                                offlineFriends.set(user.email, user.name)
+                                console.log("api: " + user.email + "-" + user.name + " registered");
                             })
                         }
                     });
@@ -179,21 +187,12 @@ io.on('connection', (socket) => {
             console.log("User " + socket.request.user.name + " joined room \"" + roomId + "\"");
         }
 
-        if (!roomId) {
-            room[roomId] = {};
-            socket.join(roomId);
-            io.in(roomId).emit("room", socket.request.user.name);
-            getWishlistUsers();
-        } else {
-            socket.join(roomId);
-            io.in(roomId).emit("room", socket.request.user.name);
-            getWishlistUsers();
-        }
+        onlineFriends.set(socket.request.user.email, socket.request.user.name)
+        offlineFriends.delete(socket.request.user.email)
+
         const serializedOnlineFriends = JSON.stringify([...onlineFriends]);
         const serializedOfflineFriends = JSON.stringify([...offlineFriends]);
         const serializedNotRegisteredFriends = JSON.stringify([...notRegisteredFriends]);
-
-        // emit online friends to show on web page
         io.in(roomId).emit('online', serializedOnlineFriends);
         io.in(roomId).emit('offline', serializedOfflineFriends);
         io.in(roomId).emit('notRegistered', serializedNotRegisteredFriends);
