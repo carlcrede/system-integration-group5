@@ -117,9 +117,9 @@ io.use((socket, next) => {
 
 
 const SESSION_RELOAD_INTERVAL = 30 * 1000;
-const onlineFriends = new Map();
-const offlineFriends = new Map();
-const notRegisteredFriends = new Map();
+const onlineFriends = [];
+const offlineFriends = [];
+const notRegisteredFriends = [];
 const room = {};
 io.on('connection', (socket) => {
     console.log(`new connection ${socket.id} for user ${socket.request.user.name}`);
@@ -169,13 +169,12 @@ io.on('connection', (socket) => {
                 userController.getCurrentWishlist(roomId).then((wishlist) => {
                     wishlist.invites.forEach(invite => {
                         if (invite.status === 'pending') {
-                            notRegisteredFriends.set(invite.email, "Unknown")
-                            const serializedNotRegisteredFriends = JSON.stringify([...notRegisteredFriends]);
-                            io.in(roomId).emit('notRegistered', serializedNotRegisteredFriends);
+                            notRegisteredFriends.push({ "email": invite.email, "name": "Unknown" })
+                            io.in(roomId).emit('notRegistered', notRegisteredFriends);
                             console.log("api: " + invite.email + " not registered");
                         } else if (invite.status === 'accepted') {
                             userController.getUserByEmail(invite.email).then((user) => {
-                                offlineFriends.set(user.email, user.name)
+                                offlineFriends.push({ "email": user.email, "name": user.name })
                                 console.log("api: " + user.email + "-" + user.name + " registered");
                             })
                         }
@@ -187,28 +186,25 @@ io.on('connection', (socket) => {
             console.log("User " + socket.request.user.name + " joined room \"" + roomId + "\"");
         }
 
-        onlineFriends.set(socket.request.user.email, socket.request.user.name)
-        offlineFriends.delete(socket.request.user.email)
+        onlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
+        const updatedOfflineFriends = offlineFriends.filter((node => node.email !== socket.request.user.email));
 
-        const serializedOnlineFriends = JSON.stringify([...onlineFriends]);
-        const serializedOfflineFriends = JSON.stringify([...offlineFriends]);
-        const serializedNotRegisteredFriends = JSON.stringify([...notRegisteredFriends]);
-        io.in(roomId).emit('online', serializedOnlineFriends);
-        io.in(roomId).emit('offline', serializedOfflineFriends);
-        io.in(roomId).emit('notRegistered', serializedNotRegisteredFriends);
+
+        io.in(roomId).emit('online', onlineFriends);
+        io.in(roomId).emit('offline', updatedOfflineFriends);
+        io.in(roomId).emit('notRegistered', notRegisteredFriends);
     });
 
     socket.on("disconnecting", () => {
         socket.rooms.forEach(room => {
             console.log("User " + socket.request.user.name + " left room " + room); // the Set contains at least the socket ID
-            onlineFriends.delete(socket.request.user.email)
-            offlineFriends.set(socket.request.user.email, socket.request.user.name)
-            const serializedOfflineFriends = JSON.stringify([...offlineFriends]);
-            const serializedOnlineFriends = JSON.stringify([...onlineFriends]);
+            const updatedOnlineFriends = onlineFriends.filter((node => node.email !== socket.request.user.email));
+            offlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
+            console.log(offlineFriends)
 
             // emit offline friends to show on web page
-            io.in(room).emit('offline', serializedOfflineFriends);
-            io.in(room).emit('online', serializedOnlineFriends);
+            io.in(room).emit('offline', offlineFriends);
+            io.in(room).emit('online', updatedOnlineFriends);
         });
     });
 

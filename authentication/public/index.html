@@ -77,46 +77,43 @@
       while (onlineList.hasChildNodes()) {
         onlineList.removeChild(onlineList.firstChild);
       }
-      let map = new Map(JSON.parse(data));
-      for (let key of map.keys()) {
+      data.forEach(user => {
         var listElement = document.createElement("LI");
         var you = '';
-        if (key === emailSpan.innerText) {
+        if (user.email === emailSpan.innerText) {
           you = ' (you)';
         }
-        var textnode = document.createTextNode(map.get(key) + you);
+        var textnode = document.createTextNode(user.name + you);
         listElement.style.color = "green";
         listElement.appendChild(textnode);
         onlineList.appendChild(listElement);
-      }
+      });
     });
 
     socket.on('offline', (data) => {
       while (offlineList.hasChildNodes()) {
         offlineList.removeChild(offlineList.firstChild);
       }
-      let map = new Map(JSON.parse(data));
-      for (let value of map.values()) {
+      data.forEach(user => {
         var listElement = document.createElement("LI");
-        var textnode = document.createTextNode(value);
+        var textnode = document.createTextNode(user.name);
         listElement.style.color = "red";
         listElement.appendChild(textnode);
         offlineList.appendChild(listElement);
-      }
+      });
     });
 
     socket.on('notRegistered', (data) => {
       while (notRegisteredList.hasChildNodes()) {
         notRegisteredList.removeChild(notRegisteredList.firstChild);
       }
-      let map = new Map(JSON.parse(data));
-      for (let key of map.keys()) {
+      data.forEach(user => {
         var listElement = document.createElement("LI");
-        var textnode = document.createTextNode(key);
+        var textnode = document.createTextNode(user.email);
         listElement.style.color = "black";
         listElement.appendChild(textnode);
         notRegisteredList.appendChild(listElement);
-      }
+      });
     });
 
   </script>
