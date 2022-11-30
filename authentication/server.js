@@ -16,12 +16,14 @@ const sessionMiddleware = session({ secret: process.env.SECRET, resave: false, s
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const userController = require('./controllers/userController');
+const cors = require('cors');
 app.use(sessionMiddleware);
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
 const Strategy = User.createStrategy()
 passport.use(Strategy);
 passport.serializeUser(User.serializeUser());
