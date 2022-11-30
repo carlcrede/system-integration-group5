@@ -193,10 +193,11 @@ io.on('connection', (socket) => {
             onlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
         }
         offlineFriends = offlineFriends.filter(node => node.email !== socket.request.user.email);
-
-        io.in(roomId).emit('online', onlineFriends);
-        io.in(roomId).emit('offline', offlineFriends);
-        io.in(roomId).emit('notRegistered', notRegisteredFriends);
+        setTimeout(function () {
+            io.in(roomId).emit('online', onlineFriends);
+            io.in(roomId).emit('offline', offlineFriends);
+            io.in(roomId).emit('notRegistered', notRegisteredFriends);
+        }, 1000);
     });
 
     socket.on("disconnecting", () => {
