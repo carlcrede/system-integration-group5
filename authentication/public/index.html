@@ -41,17 +41,13 @@
     const notRegisteredList = document.getElementById("notRegistered");
     function joinRoom() {
       const roomNumber = document.getElementById("room").value;
-      socket.emit("joinroom", "637e849b6cbce308c1108662");
+      socket.emit("joinroom", roomNumber);
     }
 
     function sendMessage() {
       const roomNumber = document.getElementById("room").value;
       socket.emit("message", { room: roomNumber, message: document.getElementById("message").value });
     }
-
-    socket.on("connect", () => {
-      joinRoom()
-    });
 
     socket.on("message", (data) => {
       console.log(data.user + ": " + data.message);
