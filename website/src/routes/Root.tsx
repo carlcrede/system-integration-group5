@@ -1,7 +1,8 @@
-import { Box, Button, Center, Flex, Img, Input, InputGroup, InputRightElement, Link, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { Button, Flex, Input, InputGroup, InputRightElement, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
 import { useQuery, gql } from '@apollo/client';
-import { SearchIcon, StarIcon } from "@chakra-ui/icons";
-import { useState, useEffect } from "react";
+import { SearchIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+import Product from "../components/Product";
 
 const LIST_PRODUCTS = gql`
   query GetProducts {
@@ -45,7 +46,7 @@ function Root() {
   return (
     <Flex flexDir='column' align={'center'} justifyContent={'center'}>
         <Text fontSize='x-large'>Products</Text>
-        <InputGroup size='md'>
+        <InputGroup size='md' my="5">
           <Input 
             value={productNameInput} 
             onChange={(event) => setProductNameInput(event.target.value)} 
@@ -57,19 +58,11 @@ function Root() {
           </InputRightElement>
         </InputGroup>
         {loading && <Spinner />}
-        <SimpleGrid columns={3} spacing={8} my="5">
+        {error && <Text>{error.message}</Text>}
+        <SimpleGrid minChildWidth='140px'spacing={8} mx="5">
           {/* {data && data.products && data.products.map((item) => ( */}
           {item && (
-            <Box key={item.id} p='2' border='1px' borderColor='gray.200' borderRadius="md">
-              <Text mr='auto'>{item.main_category} {">"} {item.sub_category}</Text>
-              <Img my="5" />
-              <Link href={item.link}><b>{item.product_name}</b></Link>
-              <Text>{item.product_sub_title}</Text>
-              <Box display='flex' justifyContent='space-between' mt="5">
-                <Text>Rating: {item.overall_rating} <StarIcon /></Text>
-                <Text>{item.price}</Text>
-              </Box>
-            </Box>
+            <Product key={item.id}  item={item} />
             )}
           {/* ))} */}
         </SimpleGrid>
