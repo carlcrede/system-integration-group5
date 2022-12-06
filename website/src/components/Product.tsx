@@ -1,9 +1,10 @@
 import { StarIcon } from "@chakra-ui/icons";
 import { Box, Collapse, Divider, Img, Link, Text } from "@chakra-ui/react";
 import React, { FunctionComponent, useState } from "react";
+import { Product as ProductType } from "../gql/graphql";
 
 interface ProductProps {
-    item: any
+    item: ProductType
 }
  
 const Product: FunctionComponent<ProductProps> = ({ item }) => {
@@ -14,7 +15,7 @@ const Product: FunctionComponent<ProductProps> = ({ item }) => {
             <Text mr='auto'>{item.main_category} {">"} {item.sub_category}</Text>
             <Box onClick={() => setOpen(true)}>
             <Img my="5" />
-            <Link href={item.link}><b>{item.product_name}</b></Link>
+            <Link href={item.link || ''}><b>{item.product_name}</b></Link>
             <Text>{item.product_sub_title}</Text>
             <Collapse in={open} animateOpacity>
                 <Divider />
