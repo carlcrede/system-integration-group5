@@ -10,7 +10,8 @@ const passport = require('passport');
  *   post:
  *     summary: Sends an signup request in json format
  *     description: Signup using email and password
- * 
+ *     tags: 
+ *          - Authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -69,7 +70,8 @@ router.route('/signup')
  *   post:
  *     summary: Sends an login request in json format
  *     description: Login using email and password
- *     
+ *     tags: 
+ *          - Authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -115,7 +117,8 @@ router.route('/signup')
  *   post:
  *     summary: Logs the user out and ends the session
  *     description: Ends the session. If the user tries to use the same session they will not be allowed to
- *     
+ *     tags: 
+ *          - Authentication
  *     security:
  *       - cookieAuth: []
  *     responses:
@@ -137,6 +140,8 @@ router.route('/signup')
  *   post:
  *     summary: Creates a wishlist in json format
  *     description: Create a wishlist on the logged in user
+ *     tags: 
+ *          - Wishlists
  *     security:
  *       - cookieAuth: []
  *     responses:
@@ -165,6 +170,8 @@ router.route('/wishlists')
  *   get:
  *     summary: Get a wishlist in json format
  *     description: Get a wishlist with the given id
+ *     tags: 
+ *          - Wishlists
  *     responses:
  *       200:
  *         description: Returns a wishlist.
@@ -184,6 +191,8 @@ router.route('/wishlists')
  *   get:
  *     summary: Get all wishlists in json format
  *     description: Get all wishlists of the logged in user
+ *     tags: 
+ *          - Wishlists
  *     responses:
  *       200:
  *         description: Returns all wishlists.
@@ -197,6 +206,8 @@ router.route('/wishlists')
  *   post:
  *     summary: Sends an invite in json format
  *     description: Send an invite to a user
+ *     tags: 
+ *          - Invites
  *     security:
  *       - cookieAuth: []
  *     responses:
@@ -228,7 +239,8 @@ router.route('/wishlists/:id/invites')
  *   get:
  *     summary: Accepts an invite and gets it in json format
  *     description: Accept and get an invite
- * 
+ *     tags: 
+ *          - Invites
  *     parameters:
  *       - in: path
  *         name: id

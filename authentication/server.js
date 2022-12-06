@@ -16,12 +16,14 @@ const sessionMiddleware = session({ secret: process.env.SECRET, resave: false, s
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const userController = require('./controllers/userController');
+const cors = require('cors');
 app.use(sessionMiddleware);
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
 const Strategy = User.createStrategy()
 passport.use(Strategy);
 passport.serializeUser(User.serializeUser());
@@ -117,9 +119,9 @@ io.use((socket, next) => {
 
 
 const SESSION_RELOAD_INTERVAL = 30 * 1000;
-const onlineFriends = [];
-const offlineFriends = [];
-const notRegisteredFriends = [];
+var onlineFriends = [];
+var offlineFriends = [];
+var notRegisteredFriends = [];
 const room = {};
 io.on('connection', (socket) => {
     console.log(`new connection ${socket.id} for user ${socket.request.user.name}`);
@@ -169,12 +171,16 @@ io.on('connection', (socket) => {
                 userController.getCurrentWishlist(roomId).then((wishlist) => {
                     wishlist.invites.forEach(invite => {
                         if (invite.status === 'pending') {
-                            notRegisteredFriends.push({ "email": invite.email, "name": "Unknown" })
+                            if (!notRegisteredFriends.find(node => node.email === invite.email)) {
+                                notRegisteredFriends.push({ "email": invite.email, "name": "Unknown" })
+                            }
                             io.in(roomId).emit('notRegistered', notRegisteredFriends);
                             console.log("api: " + invite.email + " not registered");
                         } else if (invite.status === 'accepted') {
                             userController.getUserByEmail(invite.email).then((user) => {
-                                offlineFriends.push({ "email": user.email, "name": user.name })
+                                if (!offlineFriends.find(node => node.email === user.email)) {
+                                    offlineFriends.push({ "email": user.email, "name": user.name })
+                                }
                                 console.log("api: " + user.email + "-" + user.name + " registered");
                             })
                         }
@@ -185,26 +191,27 @@ io.on('connection', (socket) => {
             }
             console.log("User " + socket.request.user.name + " joined room \"" + roomId + "\"");
         }
-
-        onlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
-        const updatedOfflineFriends = offlineFriends.filter((node => node.email !== socket.request.user.email));
-
-
-        io.in(roomId).emit('online', onlineFriends);
-        io.in(roomId).emit('offline', updatedOfflineFriends);
-        io.in(roomId).emit('notRegistered', notRegisteredFriends);
+        if (!onlineFriends.find(node => node.email === socket.request.user.email)) {
+            onlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
+        }
+        offlineFriends = offlineFriends.filter(node => node.email !== socket.request.user.email);
+        setTimeout(function () {
+            io.in(roomId).emit('online', onlineFriends);
+            io.in(roomId).emit('offline', offlineFriends);
+            io.in(roomId).emit('notRegistered', notRegisteredFriends);
+        }, 1000);
     });
 
     socket.on("disconnecting", () => {
         socket.rooms.forEach(room => {
             console.log("User " + socket.request.user.name + " left room " + room); // the Set contains at least the socket ID
-            const updatedOnlineFriends = onlineFriends.filter((node => node.email !== socket.request.user.email));
-            offlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
-            console.log(offlineFriends)
-
+            onlineFriends = onlineFriends.filter(node => node.email !== socket.request.user.email);
+            if (!offlineFriends.find(node => node.email === socket.request.user.email)) {
+                offlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
+            }
             // emit offline friends to show on web page
             io.in(room).emit('offline', offlineFriends);
-            io.in(room).emit('online', updatedOnlineFriends);
+            io.in(room).emit('online', onlineFriends);
         });
     });
 

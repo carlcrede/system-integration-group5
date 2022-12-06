@@ -6,7 +6,7 @@ export let db: DB;
 let modified: number | undefined;
 
 const db_connect = async () => {
-    const response = await fetch('https://keablob.blob.core.windows.net/products/products_final.db');
+    const response = await fetch('https://keablob.blob.core.windows.net/products/products.db');
     const last_modified = new Date(response.headers.get('last-modified')).getTime();
     
     if (modified && modified >= last_modified) {
