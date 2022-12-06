@@ -25,9 +25,12 @@ function LoginPage() {
         <h1>Login</h1>
         <Formik
           initialValues={{ email: '', password: '' }}
-          onSubmit={(values, actions) => {
-              login(values.email, values.password).then(() => actions.setSubmitting(false))
-              .then(() => navigate('/'))
+          onSubmit={async (values, actions) => {
+              const loginRes = await login(values.email, values.password)
+              actions.setSubmitting(false)
+              if (loginRes) {
+                navigate('/')
+              }
           }}
           >
           {(props) => (

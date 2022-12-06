@@ -22,10 +22,18 @@ export const useAuth = () => {
          headers: { 'Content-Type': 'application/json' }, 
          body: JSON.stringify({ email, password }) 
     })
-    const jwt = await login_res.text()
-    if (jwt && login_res.ok) {
-        addUserToken(jwt);
+    const res = await login_res.text()
+    if (!login_res.ok) {
+      toast({
+        title: res,
+        status: 'error',
+        isClosable: true,
+      })
     }
+    else {
+      addUserToken(res);
+    }
+    return login_res.ok
   };
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
