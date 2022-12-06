@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
-import Root from './routes/Root';
+import HomePage from './routes/HomePage';
 import ErrorPage from "./error-page";
 import {
   createBrowserRouter,
@@ -20,7 +20,7 @@ const client = new ApolloClient({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <HomePage />,
     errorElement: <ErrorPage />,
     children: [
     ],
