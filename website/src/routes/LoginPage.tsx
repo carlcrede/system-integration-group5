@@ -12,35 +12,11 @@ import { Field, Form, Formik } from 'formik';
 import { useNavigate } from "react-router-dom";
 import PageTemplate from "../containers/PageTemplate";
 import { useAuth } from "../hooks/useAuth";
+import { validateEmail, validatePassword } from "../utils/inputValidation";
 
 function LoginPage() {
   const navigate  = useNavigate();
   const { login } = useAuth();
-
-  function validateEmail(value: string) {
-    let error
-    if (!value) {
-      error = 'Email is required'
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
-      error = "Email is invalid"
-    }
-    return error
-  }
-
-  function validatePassword(value: string) {
-    let error
-    if (!value) {
-      error = 'Password is required'
-    } else if (value.length < 6) {
-      error = passwordInvalidError
-    }
-    return error
-  }
-
-  const passwordInvalidError = (<VStack align={"flex-start"}>
-    <Text>Password must contain:</Text>
-    <Text>- 6 Characters</Text>
-  </VStack>)  
 
   return (
     <PageTemplate selectedIndex={0}>
