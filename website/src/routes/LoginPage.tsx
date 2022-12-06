@@ -1,19 +1,15 @@
 import {
   Container,
-  Flex,
   Text,
-  StackDivider,
-  Stack,
-  HStack,
   VStack,
-  Input,
-  Button,
   FormControl,
   FormLabel,
   FormErrorMessage,
-  FormHelperText,
+  Button,
+  Input,
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from 'formik';
+import PageTemplate from "../containers/PageTemplate";
 
 function LoginPage() {
 
@@ -47,6 +43,7 @@ function LoginPage() {
   </VStack>)
 
   return (
+    <PageTemplate selectedIndex={1}>
     <Container maxW='xs' centerContent>
       <VStack>
         <h1>Login</h1>
@@ -58,7 +55,7 @@ function LoginPage() {
               actions.setSubmitting(false)
             }, 1000)
           }}
-        >
+          >
           {(props) => (
             <Form>
               <Field name='email' validate={validateEmail}>
@@ -84,7 +81,7 @@ function LoginPage() {
                 colorScheme='teal'
                 isLoading={props.isSubmitting}
                 type='submit'
-              >
+                >
                 Submit
               </Button>
             </Form>
@@ -92,6 +89,7 @@ function LoginPage() {
         </Formik>
       </VStack>
     </Container>
+    </PageTemplate>
   )
 }
 

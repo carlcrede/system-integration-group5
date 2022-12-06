@@ -1,14 +1,13 @@
 import { Flex, Text } from "@chakra-ui/react"
-import NavBar from "../components/NavBar";
+import PageTemplate from "../containers/PageTemplate";
 
 function SignUpPage() {
   return (
-    <div>
-    <NavBar />
+    <PageTemplate selectedIndex={2}>
       <Flex align={'center'} justifyContent={'center'}>
         <Text>Sign Up</Text>
       </Flex>
-    </div>
+    </PageTemplate>
   )
 }
 

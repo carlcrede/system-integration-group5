@@ -3,7 +3,7 @@ import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
 import Product from "../components/Product";
 import { Product as ProductType } from "../gql/graphql";
-import NavBar from "../components/NavBar";
+import PageTemplate from "../containers/PageTemplate";
 
 const SearchProductDocument = gql(/* GraphQL */ 
 `query SearchProduct($name: String!) {
@@ -27,8 +27,8 @@ function Root() {
 
   const item = data?.searchProduct as ProductType
   return (
+    <PageTemplate selectedIndex={0}>
     <Flex flexDir='column' align={'center'} justifyContent={'center'}>
-        <NavBar />
         <Text fontSize='x-large'>Products</Text>
         <InputGroup size='md' my="5" px="5">
           <Input
@@ -46,6 +46,7 @@ function Root() {
           {/* ))} */}
         </SimpleGrid>
     </Flex>
+    </PageTemplate>
   )
 }
 

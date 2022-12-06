@@ -1,56 +1,38 @@
 import {
-    Flex,
     TabList,
     Tabs,
     Tab,
-    Text,
-    TabPanels,
-    TabPanel,
-    Stack,
-    HStack,
-    VStack,
-    Input,
-    Button,
-    FormControl,
-    FormLabel,
-    FormErrorMessage,
-    FormHelperText,
+    Box,
+    Divider,
 } from "@chakra-ui/react"
+import React, { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
-import LoginPage from "../routes/LoginPage";
 
-function NavBar() {
+type Props = {
+    selectedIndex: 0 | 1 | 2
+}
+
+const NavBar: FunctionComponent<Props> = ({selectedIndex}) => {
     return (
-        <div>
-            <Tabs variant='soft-rounded'>
-                <TabList>
+        <Box mb="4">
+            <Tabs 
+                my="2" 
+                variant='soft-rounded' 
+                index={selectedIndex}>
+                <TabList justifyContent='center'>
                     <Tab>
                         <Link to="/">Home</Link>
                     </Tab>
                     <Tab>
-                        <Link to="/">Login</Link>
+                        <Link to="/login">Login</Link>
                     </Tab>
                     <Tab>
-                        <Link to="/">SignUp</Link>
+                        <Link to="/sign-up">SignUp</Link>
                     </Tab>
                 </TabList>
-                <TabPanels>
-                    <TabPanel>
-                        <Flex align={'center'} justifyContent={'center'}>
-                            <Text>Wishlist Home</Text>
-                        </Flex>
-                    </TabPanel>
-                    <TabPanel>
-                        <LoginPage />
-                    </TabPanel>
-                    <TabPanel>
-                        <Flex align={'center'} justifyContent={'center'}>
-                            <Text>Sign Up</Text>
-                        </Flex>
-                    </TabPanel>
-                </TabPanels>
             </Tabs>
-        </div >
+            <Divider />
+        </Box>
     )
 }
 
