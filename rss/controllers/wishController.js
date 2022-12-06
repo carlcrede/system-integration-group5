@@ -24,6 +24,16 @@ export function add(req, res) {
         ]
     });
 
+    // limit feed size to 50 items/wishes
+    // If you have questions about this, it's about the intent of it
+    // we only want a simple feed on the login page to show what people
+    // have recently wished for, so limiting the size of the feed seems
+    // logical otherwise it would just continue growing (when there is no
+    // real benefit for it doing so)
+    if (feed.items.length > 50) {
+        feed.items.shift();
+    }
+
     // save to xml file
     fs.writeFile('./wishes.xml', feed.xml(), (err) => {
         if (err) {
@@ -36,6 +46,7 @@ export function add(req, res) {
     res.json({ message: "Wish added to feed!"});
 }
 
+// deprecated
 export function remove(req, res) {
     const id = req.params.id;
     let found = false;
