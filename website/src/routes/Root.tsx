@@ -1,6 +1,5 @@
-import { Button, Flex, Input, InputGroup, InputRightElement, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
-import { useQuery, gql, DocumentNode } from '@apollo/client';
-import { SearchIcon } from "@chakra-ui/icons";
+import { Flex, Input, InputGroup, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
 import Product from "../components/Product";
 import { Product as ProductType } from "../gql/graphql";
@@ -29,16 +28,11 @@ function Root() {
   return (
     <Flex flexDir='column' align={'center'} justifyContent={'center'}>
         <Text fontSize='x-large'>Products</Text>
-        <InputGroup size='md' my="5">
+        <InputGroup size='md' my="5" px="5">
           <Input
             value={productNameInput}
             onChange={(event) => setProductNameInput(event.target.value)}
             placeholder='Product name' />
-          <InputRightElement>
-            <Button>
-              <SearchIcon />
-            </Button>
-          </InputRightElement>
         </InputGroup>
         {loading && <Spinner />}
         {error && <Text>{error.message}</Text>}
