@@ -3,7 +3,7 @@ import PageTemplate from "../containers/PageTemplate";
 
 function SignUpPage() {
   return (
-    <PageTemplate selectedIndex={2}>
+    <PageTemplate selectedIndex={1}>
       <Flex align={'center'} justifyContent={'center'}>
         <Text>Sign Up</Text>
       </Flex>

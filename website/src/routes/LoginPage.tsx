@@ -9,9 +9,13 @@ import {
   Input,
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from 'formik';
+import { useNavigate } from "react-router-dom";
 import PageTemplate from "../containers/PageTemplate";
+import { useAuth } from "../hooks/useAuth";
 
 function LoginPage() {
+  const navigate  = useNavigate();
+  const { login } = useAuth();
 
   function validateEmail(value: string) {
     let error
@@ -27,7 +31,7 @@ function LoginPage() {
     let error
     if (!value) {
       error = 'Password is required'
-    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/i.test(value)) {
+    } else if (value.length < 6) {
       error = passwordInvalidError
     }
     return error
@@ -35,25 +39,19 @@ function LoginPage() {
 
   const passwordInvalidError = (<VStack align={"flex-start"}>
     <Text>Password must contain:</Text>
-    <Text>- 8 Characters</Text>
-    <Text>- One Uppercase</Text>
-    <Text>- One Lowercase</Text>
-    <Text>- One Number</Text>
-    <Text>- One Special Case Character</Text>
-  </VStack>)
+    <Text>- 6 Characters</Text>
+  </VStack>)  
 
   return (
-    <PageTemplate selectedIndex={1}>
+    <PageTemplate selectedIndex={0}>
     <Container maxW='xs' centerContent>
       <VStack>
         <h1>Login</h1>
         <Formik
           initialValues={{ email: '', password: '' }}
           onSubmit={(values, actions) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2))
-              actions.setSubmitting(false)
-            }, 1000)
+              login(values.email, values.password).then(() => actions.setSubmitting(false))
+              .then(() => navigate('/'))
           }}
           >
           {(props) => (
@@ -62,7 +60,7 @@ function LoginPage() {
                 {({ field, form }) => (
                   <FormControl isInvalid={form.errors.email && form.touched.email}>
                     <FormLabel>Email</FormLabel>
-                    <Input {...field} placeholder='email@email.com' />
+                    <Input {...field} type='email' placeholder='email@email.com' />
                     <FormErrorMessage>{form.errors.email}</FormErrorMessage>
                   </FormControl>
                 )}
@@ -71,7 +69,7 @@ function LoginPage() {
                 {({ field, form }) => (
                   <FormControl isInvalid={form.errors.password && form.touched.password}>
                     <FormLabel>Password</FormLabel>
-                    <Input {...field} placeholder='Password123' />
+                    <Input {...field} type='password' placeholder='Password123' />
                     <FormErrorMessage>{form.errors.password}</FormErrorMessage>
                   </FormControl>
                 )}
