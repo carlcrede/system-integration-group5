@@ -46,7 +46,7 @@ const NavBar: FunctionComponent<Props> = ({selectedIndex}) => {
                         <Link to="/login">Login</Link>
                     </Tab>
                     <Tab>
-                        <Link to="/sign-up">SignUp</Link>
+                        <Link to="/sign-up">Sign Up</Link>
                     </Tab>
                         </>
                     )}

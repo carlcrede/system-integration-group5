@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useToast } from '@chakra-ui/react';
 
 export const useAuth = () => {
+  const toast = useToast()
   const api_url = 'https://si-auth-server-5rds.onrender.com/api/';
+
   const getUserToken = () => {
     return localStorage.getItem('user');
   }
@@ -27,11 +29,19 @@ export const useAuth = () => {
   };
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
-    return fetch(api_url + 'auth/register', {
+    const sign_up_res = await fetch(api_url + 'auth/register', {
          method: 'POST', 
          headers: { 'Content-Type': 'application/json' }, 
          body: JSON.stringify({ email, password, firstName, lastName }) 
     })
+    if (!sign_up_res.ok) {
+      toast({
+        title: await sign_up_res.text(),
+        status: 'error',
+        isClosable: true,
+      })
+    }
+    return sign_up_res.ok
   };
 
   const logout = () => {

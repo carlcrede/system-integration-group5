@@ -17,3 +17,13 @@ export function validatePassword(value: string) {
     }
     return error
 }
+
+export function validateName(value: string) {
+    let error
+    if (!value) {
+        error = 'Name is required'
+    } else if (value.length < 3) {
+        error = 'Each name must be at least 3 characters long'
+    }
+    return error
+}
