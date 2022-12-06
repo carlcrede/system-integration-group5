@@ -1,10 +1,14 @@
 import { Flex, Text } from "@chakra-ui/react"
+import NavBar from "../components/NavBar";
 
 function Root() {
   return (
-    <Flex align={'center'} justifyContent={'center'}>
+    <div>
+    <NavBar />
+    {/* <Flex align={'center'} justifyContent={'center'}>
         <Text>Shit just works</Text>
-    </Flex>
+    </Flex> */}
+    </div>
   )
 }
 
