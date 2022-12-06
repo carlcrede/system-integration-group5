@@ -25,7 +25,6 @@ function HomePage() {
   const [productNameInput, setProductNameInput] = useState('')
   const { loading, error, data } = useQuery(SearchProductDocument, { variables: { name: productNameInput } })
 
-  const item = data?.searchProduct as ProductType
   return (
     <PageTemplate selectedIndex={0}>
     <Flex flexDir='column' align={'center'} justifyContent={'center'}>
@@ -38,12 +37,10 @@ function HomePage() {
         </InputGroup>
         {loading && <Spinner />}
         {error && <Text>{error.message}</Text>}
-        <SimpleGrid minChildWidth='140px'spacing={8} mx="5">
-          {/* {data && data.products && data.products.map((item) => ( */}
-          {item && (
+        <SimpleGrid columns={{sm: 2, md: 3}} spacing={8} m="5">
+          {data && data.searchProduct && data.searchProduct.map((item: ProductType) => (
             <Product key={item.id}  item={item} />
-            )}
-          {/* ))} */}
+          ))}
         </SimpleGrid>
     </Flex>
     </PageTemplate>
