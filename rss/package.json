@@ -17,6 +17,8 @@
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "rss": "^1.2.2",
-    "rss-parser": "^3.12.0"
+    "rss-parser": "^3.12.0",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.6.0"
   }
 }
