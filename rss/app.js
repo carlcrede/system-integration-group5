@@ -3,14 +3,17 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import RSS from 'rss';
 import fs from 'fs';
+import Parser from 'rss-parser';
+import bodyParser from 'body-parser';
 dotenv.config({ path: './.env' });
 
 const app = express();
 app.use(cors());
+app.use(bodyParser.json());
 
-// load from xml file?
-// create feed from xml file?
-
+// load from xml file
+let parser = new Parser();
+let xml = fs.readFileSync('./wishes.xml').toString();
 
 let feed = new RSS({
     title: 'Wishes',
@@ -26,14 +29,31 @@ let feed = new RSS({
     pubDate: Date.now()
 });
 
+if (xml) {
+    const parsedXml = await parser.parseString(xml);
+
+    parsedXml.items.forEach(item => {
+        feed.item({
+            title: item.title,
+            description: item.content,
+            guid: item.guid,
+            date: item.pubDate,
+            link: item.link
+        });
+    });
+}
+
+
 // get feed
 app.get('/wishes.xml', (req, res) => {
+    // load xml file and return???
     res.statusCode = 200;
     res.set('Content-Type', 'text/xml');
     res.json({ feed: feed.xml() });
 });
 
 // add to feed
+// how do we limit feed size???
 app.post('/wish', (req, res) => {
     // TODO insert wish to feed
     feed.item({
@@ -42,12 +62,16 @@ app.post('/wish', (req, res) => {
             "A user wished for " + req.body.name + ". " + req.body.price + ",-" +
             req.body.image_url,  // TODO
         guid: Date.now(),   // we'll just use ms from epoch time as id
-        date: Date.now().toLocaleString(),
+        date: Date.now(),
         link: req.body.product_url 
     });
 
     // save to xml file?
-    // TODO
+    fs.writeFile('./wishes.xml', feed.xml(), (err) => {
+        if (err) {
+            console.log(err);
+        }
+    });
 
     // return message
     res.statusCode = 200;
