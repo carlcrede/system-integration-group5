@@ -33,7 +33,7 @@ function AcceptInvitePage() {
           >
           {(props) => (
             <Form>
-              <Field name='token'>
+              <Field name='token'> // TODO: Remove field and use the invite token from the URL
                 {({ field}) => (
                   <FormControl>
                     <FormLabel>Token</FormLabel>
