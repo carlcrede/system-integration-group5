@@ -11,25 +11,25 @@ import {
 import { Field, Form, Formik } from 'formik';
 import { useNavigate } from "react-router-dom";
 import PageTemplate from "../containers/PageTemplate";
-import { useAuth } from "../hooks/useAuth";
-import { validateEmail, validatePassword } from "../utils/inputValidation";
+import { useInvites } from "../hooks/useInvites";
+import { validateEmail } from "../utils/inputValidation";
 
-function LoginPage() {
+function SendInvitePage() {
   const navigate  = useNavigate();
-  const { login } = useAuth();
+  const { sendInvite } = useInvites();
 
   return (
-    <PageTemplate selectedIndex={0}>
+    <PageTemplate selectedIndex={1}>
     <Container maxW='xs' centerContent>
       <VStack>
-      <Text fontSize='x-large'>Login</Text>
+      <Text fontSize='x-large'>Send Invites</Text>
         <Formik
-          initialValues={{ email: '', password: '' }}
+          initialValues={{ email: ''}}
           onSubmit={async (values, actions) => {
-              const loginRes = await login(values.email, values.password)
+              const sendInviteRes = await sendInvite(values.email)
               actions.setSubmitting(false)
-              if (loginRes) {
-                navigate('/')
+              if (sendInviteRes) {
+                navigate('/send-invites')
               }
           }}
           >
@@ -44,22 +44,13 @@ function LoginPage() {
                   </FormControl>
                 )}
               </Field>
-              <Field name='password' validate={validatePassword}>
-                {({ field, form }) => (
-                  <FormControl isInvalid={form.errors.password && form.touched.password}>
-                    <FormLabel>Password</FormLabel>
-                    <Input {...field} type='password' placeholder='Password123' />
-                    <FormErrorMessage>{form.errors.password}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
               <Button
                 mt={4}
                 colorScheme='teal'
                 isLoading={props.isSubmitting}
                 type='submit'
                 >
-                Submit
+                Send invite
               </Button>
             </Form>
           )}
@@ -70,4 +61,4 @@ function LoginPage() {
   )
 }
 
-export default LoginPage;
+export default SendInvitePage;

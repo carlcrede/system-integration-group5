@@ -12,7 +12,7 @@ function SignUpPage() {
   return (
     <PageTemplate selectedIndex={1}>
       <Flex flexDir='column' align={'center'} justifyContent={'center'}>
-        <Text>Sign Up</Text>
+      <Text fontSize='x-large'>Sign Up</Text>
         <Formik
           initialValues={{ email: '', password: '', firstName: '', lastName: '', repeatPassword: '' }}
           onSubmit={async (values, actions) => {
