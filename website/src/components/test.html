@@ -1,0 +1,62 @@
+<html>
+ 
+<head>
+  <title>Express</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script>
+  <script>
+ 
+    const socket = io("https://lionfish-app-hsj4b.ondigitalocean.app/", {
+      withCredentials: false,
+      extraHeaders:
+ 
+      /// Pass the token you receive from our authentication server here
+      // in this example the token is hardcoded
+              {authorizationToken:"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2Njk3Mjc5NjcsImV4cCI6MTcwMTI2Mzk2NywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImlkIjoiNjM3MTQyZTI3ODczOTU2NmQ4OWU5NDQ3In0.sNgdhxdtkk1oVGHETggAkRPF-4boU5gZLPeWltk3aSY"}});
+    var onlineFriends = [];
+    var offlineFriends = [];
+    var unregisteredFriends = [];
+ 
+    function renderFriendsStatus(){
+      document.getElementById("onlineFriends").innerHTML = JSON.stringify(onlineFriends);
+      document.getElementById("offlineFriends").innerHTML = JSON.stringify(offlineFriends);
+      document.getElementById("unregisteredFriends").innerHTML = JSON.stringify(unregisteredFriends);
+    }
+ 
+ 
+    socket.on("onlineFriends", (data) => {
+      console.log("friend online", data);
+      onlineFriends = data;
+      renderFriendsStatus()
+    });
+ 
+    socket.on("offlineFriends", (data) => {
+      console.log("friend Offline" + data);
+      offlineFriends = data;
+      renderFriendsStatus()
+    });
+ 
+    socket.on("invitedFriends", (data) => {
+      console.log("unregistered Friend" + data);
+      unregisteredFriends = data;
+      renderFriendsStatus()
+    });
+ 
+  </script>
+ 
+</head>
+ 
+<body>
+<h1>Express</h1>
+<p>Welcome to Express</p>
+ 
+<div id="friends-status">
+  <h2>Online Friends</h2>
+  <p id="onlineFriends"></p>
+  <h2>Offline Friends</h2>
+  <p id="offlineFriends"></p>
+  <h2>Unregistered Friends</h2>
+  <p id="unregisteredFriends"></p>
+</div>
+</body>
+ 
+</html>
