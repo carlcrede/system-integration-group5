@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import React, { FunctionComponent, ReactElement } from "react";
 import NavBar from "../components/NavBar";
-import Friends from "../components/Friends";
+import FriendsCard from "../components/Friends";
 
 interface PageTemplateProps {
     children: ReactElement,
@@ -13,7 +13,7 @@ const PageTemplate: FunctionComponent<PageTemplateProps> = ({ children, selected
         <Box w="100%">
             <NavBar selectedIndex={selectedIndex} />
             {children}
-            <Friends />
+            <FriendsCard />
         </Box>
     );
 }

@@ -13,7 +13,6 @@ import {
 import { Field, Form, Formik } from 'formik';
 import { useNavigate } from "react-router-dom";
 import PageTemplate from "../containers/PageTemplate";
-import Friends from "../components/Friends";
 import { useInvites } from "../hooks/useInvites";
 import { validateEmail } from "../utils/inputValidation";
 
@@ -24,7 +23,7 @@ function SendInvitePage() {
   return (
     <PageTemplate selectedIndex={1}>
       <Box w="100%">
-        <Flex h='calc(100vh - 350px)' flexDirection="column">
+        <Flex h='calc(100vh - 550px)' flexDirection="column">
           <VStack>
             <Text fontSize='x-large'>Send Invites</Text>
             <Formik

@@ -20,7 +20,7 @@ function AcceptInvitePage() {
   return (
     <PageTemplate selectedIndex={2}>
       <Box w="100%">
-        <Flex h='calc(100vh - 350px)' flexDirection="column">
+        <Flex h='calc(100vh - 550px)' flexDirection="column">
           <VStack>
             <Text fontSize='x-large'>Accept Invites</Text>
             <Formik

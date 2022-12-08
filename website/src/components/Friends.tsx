@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { useState, useEffect } from 'react';
 import {
     VStack,
     Box,
@@ -12,46 +13,55 @@ import {
     Card,
     StackDivider,
 } from "@chakra-ui/react"
+import { useAuth } from "../hooks/useAuth";
 
+function FriendsCard() {
 
-function Friends() {
-    const userToken = () => {
-        return localStorage.getItem('user');
+    interface Friend {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        email: string;
     }
-    const socket = io("https://lionfish-app-hsj4b.ondigitalocean.app/", {
-        withCredentials: false,
-        transports: ['polling', 'websocket'],
-        transportOptions: {
-            polling: {  // TODO: use userToken() instead of hardcoding the token
-                extraHeaders: { "authorizationToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2Njk3Mjc5NjcsImV4cCI6MTcwMTI2Mzk2NywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImlkIjoiNjM3MTQyZTI3ODczOTU2NmQ4OWU5NDQ3In0.sNgdhxdtkk1oVGHETggAkRPF-4boU5gZLPeWltk3aSY" }
-            },
-        },
-    });
 
-    var onlineFriends: string[] = [];
-    var offlineFriends: string[] = [];
-    var unregisteredFriends: string[] = [];
+    const { getUserToken, logout } = useAuth()
+    const [onlineFriends, setOnlineFriends] = useState([]);
+    const [offlineFriends, setOfflineFriends] = useState([]);
+    const [unregisteredFriends, setUnregisteredFriends] = useState([]);
 
-    socket.on("onlineFriends", (data) => {
-        data.forEach((friend: any) => {
-            onlineFriends.push(friend.firstName);
-        });
-        console.log("Online: " + onlineFriends);
-    });
+    useEffect(
+        () => {
+            const socket = io("https://lionfish-app-hsj4b.ondigitalocean.app/", {
+                withCredentials: false,
+                transports: ['polling', 'websocket'],
+                transportOptions: {
+                    polling: {  // TODO: use getUserToken instead of hardcoding the token
+                        extraHeaders: { "authorizationToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2Njk3Mjc5NjcsImV4cCI6MTcwMTI2Mzk2NywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImlkIjoiNjM3MTQyZTI3ODczOTU2NmQ4OWU5NDQ3In0.sNgdhxdtkk1oVGHETggAkRPF-4boU5gZLPeWltk3aSY" }
+                    },
+                },
+            });
 
-    socket.on("offlineFriends", (data) => {
-        data.forEach((friend: any) => {
-            offlineFriends.push(friend.firstName);
-        });
-        console.log("Offline: " + offlineFriends);
-    });
 
-    socket.on("invitedFriends", (data) => {
-        data.forEach((friend: any) => {
-            unregisteredFriends.push(friend.email);
-        }); 
-        console.log("Not registered: " + unregisteredFriends);
-    });
+
+            socket.on("onlineFriends", (data) => {
+                setOnlineFriends(data);
+                console.log("Online: " + data);
+                console.log("Online event");
+            });
+
+            socket.on("offlineFriends", (data) => {
+                setOfflineFriends(data);
+                console.log("Offline: " + data);
+                console.log("Offline event");
+            });
+
+            socket.on("invitedFriends", (data) => {
+                setUnregisteredFriends(data);
+                console.log("Not registered: " + data);
+                console.log("Not registered event");
+            });
+        }, []
+    )
 
     return (
         <VStack w={400} position="static">
@@ -67,8 +77,8 @@ function Friends() {
                                 Online &bull; ({onlineFriends.length})
                             </Heading>
                             <UnorderedList>
-                                {onlineFriends.map((friend) => (
-                                    <ListItem key={friend}>{friend}</ListItem>
+                                {onlineFriends.map((friend: Friend) => (
+                                    <ListItem key={friend._id}>{friend.firstName}</ListItem>
                                 ))}
                             </UnorderedList>
                         </Box>
@@ -77,8 +87,8 @@ function Friends() {
                                 Offline &bull; ({offlineFriends.length})
                             </Heading>
                             <UnorderedList>
-                                {offlineFriends.map((friend) => (
-                                    <ListItem key={friend}>{friend}</ListItem>
+                                {offlineFriends.map((friend: Friend) => (
+                                    <ListItem key={friend._id}>{friend.firstName}</ListItem>
                                 ))}
                             </UnorderedList>
                         </Box>
@@ -87,8 +97,8 @@ function Friends() {
                                 Not registered &bull; ({unregisteredFriends.length})
                             </Heading>
                             <UnorderedList>
-                                {unregisteredFriends.map((friend) => (
-                                    <ListItem key={friend}>{friend}</ListItem>
+                                {unregisteredFriends.map((friend: Friend) => (
+                                    <ListItem key={friend._id}>{friend.email ? friend.email : "[No email found?!]"}</ListItem>
                                 ))}
                             </UnorderedList>
                         </Box>
@@ -101,4 +111,4 @@ function Friends() {
 }
 
 
-export default Friends;
+export default FriendsCard;
