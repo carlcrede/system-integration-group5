@@ -1,9 +1,8 @@
 import io from 'socket.io-client';
 import { useState, useEffect } from 'react';
 import {
-    VStack,
+    Container,
     Box,
-    Text,
     Heading,
     UnorderedList,
     ListItem,
@@ -14,6 +13,7 @@ import {
     StackDivider,
 } from "@chakra-ui/react"
 import { useAuth } from "../hooks/useAuth";
+import friendStyle from "../components/friends.module.css";
 
 function FriendsCard() {
 
@@ -64,8 +64,8 @@ function FriendsCard() {
     )
 
     return (
-        <VStack w={400} position="static">
-            <Card>
+        <Container className={friendStyle.sticky}width={300}>
+            <Card bg="gray.100" border="1px" borderColor="gray.200" borderRadius="lg" boxShadow="lg" p="2">
                 <CardHeader>
                     <Heading size='md'>Friends</Heading>
                 </CardHeader>
@@ -105,7 +105,7 @@ function FriendsCard() {
                     </Stack>
                 </CardBody>
             </Card>
-        </VStack>
+        </Container>
 
     );
 }

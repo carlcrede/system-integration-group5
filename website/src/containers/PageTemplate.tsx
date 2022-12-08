@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/react";
 import React, { FunctionComponent, ReactElement } from "react";
 import NavBar from "../components/NavBar";
 import FriendsCard from "../components/Friends";
-
 interface PageTemplateProps {
     children: ReactElement,
     selectedIndex: 0 | 1 | 2 | 3 | 4
