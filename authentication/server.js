@@ -12,7 +12,7 @@ const router = require('./routers/router.js');
 const Schema = mongoose.Schema;
 const Wishlist = require('./models/Wishlist');
 const ObjectId = Schema.ObjectId;
-const sessionMiddleware = session({ secret: process.env.SECRET, resave: false, saveUninitialized: false });
+const sessionMiddleware = session({ secret: process.env.SECRET, resave: false, saveUninitialized: false, cookie: { sameSite: 'none', secure: true } });
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const userController = require('./controllers/userController');
@@ -23,10 +23,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors({
-    credentials: true,
-    origin: true
-}));
+app.use(cors({ credentials: true, origin: true }));
 const Strategy = User.createStrategy()
 passport.use(Strategy);
 passport.serializeUser(User.serializeUser());
