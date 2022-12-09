@@ -23,7 +23,10 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors());
+app.use(cors({
+    credentials: true,
+    origin: true
+}));
 const Strategy = User.createStrategy()
 passport.use(Strategy);
 passport.serializeUser(User.serializeUser());
