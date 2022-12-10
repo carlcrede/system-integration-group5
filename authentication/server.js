@@ -58,6 +58,18 @@ const options = {
             title: 'Wishlist API',
             version: '0.0.1',
         },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                }
+            }
+        },
+        security: [{
+            bearerAuth: []
+        }]
     },
     apis: ['./routers/*.js'],
 };
