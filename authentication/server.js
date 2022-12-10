@@ -28,9 +28,6 @@ app.use(cors({  // TODO check if this is still needed
     origin: true 
 }));
 const Strategy = User.createStrategy()
-passport.use(Strategy);
-//passport.serializeUser(User.serializeUser());
-//passport.deserializeUser(User.deserializeUser()); // wat
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
