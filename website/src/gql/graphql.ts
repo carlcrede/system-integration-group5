@@ -30,7 +30,7 @@ export type Query = {
   __typename?: 'Query';
   product?: Maybe<Product>;
   products?: Maybe<Array<Maybe<Product>>>;
-  searchProduct?: Maybe<Product>;
+  searchProduct?: Maybe<Array<Maybe<Product>>>;
 };
 
 

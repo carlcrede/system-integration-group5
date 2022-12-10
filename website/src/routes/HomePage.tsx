@@ -3,6 +3,7 @@ import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
 import Product from "../components/Product";
 import { Product as ProductType } from "../gql/graphql";
+import PageTemplate from "../containers/PageTemplate";
 
 const SearchProductDocument = gql(/* GraphQL */ 
 `query SearchProduct($name: String!) {
@@ -20,12 +21,12 @@ const SearchProductDocument = gql(/* GraphQL */
 }`
 )
 
-function Root() {
+function HomePage() {
   const [productNameInput, setProductNameInput] = useState('')
   const { loading, error, data } = useQuery(SearchProductDocument, { variables: { name: productNameInput } })
 
-  const item = data?.searchProduct as ProductType
   return (
+    <PageTemplate selectedIndex={0}>
     <Flex flexDir='column' align={'center'} justifyContent={'center'}>
         <Text fontSize='x-large'>Products</Text>
         <InputGroup size='md' my="5" px="5">
@@ -36,15 +37,14 @@ function Root() {
         </InputGroup>
         {loading && <Spinner />}
         {error && <Text>{error.message}</Text>}
-        <SimpleGrid minChildWidth='140px'spacing={8} mx="5">
-          {/* {data && data.products && data.products.map((item) => ( */}
-          {item && (
+        <SimpleGrid columns={{sm: 2, md: 3}} spacing={8} m="5">
+          {data && data.searchProduct && data.searchProduct.map((item: ProductType) => (
             <Product key={item.id}  item={item} />
-            )}
-          {/* ))} */}
+          ))}
         </SimpleGrid>
     </Flex>
+    </PageTemplate>
   )
 }
 
-export default Root;
+export default HomePage;
