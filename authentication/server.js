@@ -5,29 +5,52 @@ const User = require('./models/User');
 const mongoose = require('mongoose');
 require('dotenv').config({ path: './.env' });
 const cookieParser = require('cookie-parser');
-const session = require("express-session");
+// const session = require("express-session");                                                                                                                   // TODO
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const router = require('./routers/router.js');
 const Schema = mongoose.Schema;
 const Wishlist = require('./models/Wishlist');
 const ObjectId = Schema.ObjectId;
-const sessionMiddleware = session({ secret: process.env.SECRET, resave: false, saveUninitialized: false, cookie: { sameSite: 'none', secure: true } });
+// const sessionMiddleware = session({ secret: process.env.SECRET, resave: false, saveUninitialized: false, cookie: { sameSite: 'none', secure: false } });     // TODO
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const userController = require('./controllers/userController');
 const cors = require('cors');
-app.use(sessionMiddleware);
+// app.use(sessionMiddleware);                                                                                                                                  // TODO
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
-app.use(passport.session());
-app.use(cors({ credentials: true, origin: true }));
+// app.use(passport.session());    // remove TODO check                                                                                                        // TODO
+app.use(cors({  // TODO check if this is still needed
+    credentials: true, 
+    origin: true 
+}));
 const Strategy = User.createStrategy()
 passport.use(Strategy);
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+//passport.serializeUser(User.serializeUser());
+//passport.deserializeUser(User.deserializeUser()); // wat
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+
+const jwtOptions = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.SECRET,
+    algorithms: ['HS256']
+};
+passport.use(new JwtStrategy(jwtOptions, (payload, done) => {
+    User.findOne({ _id: payload.sub }, (err, user) => {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+        }
+    });
+}));
 app.use(router);
 const Invite = require('./models/Invite');
 
@@ -101,12 +124,12 @@ const io = require('socket.io')(server);
 // convert a connect middleware to a Socket.IO middleware
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
-io.use(wrap(sessionMiddleware));
+//io.use(wrap(sessionMiddleware));
 io.use(wrap(bodyParser.json()));
 io.use(wrap(cookieParser()));
 io.use(wrap(bodyParser.urlencoded({ extended: false })));
 io.use(wrap(passport.initialize()));
-io.use(wrap(passport.session()));
+//io.use(wrap(passport.session()));
 
 io.use((socket, next) => {
     if (socket.request.user) {

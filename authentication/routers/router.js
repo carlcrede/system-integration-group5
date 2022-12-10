@@ -109,7 +109,7 @@ router.route('/signup')
  *         description: User was not found
  */
  router.route('/login')
- .post(passport.authenticate('local'), userController.logIn);
+ .post(passport.authenticate('local', { session: false }), userController.logIn);
 
 /**
  * @openapi
@@ -132,7 +132,7 @@ router.route('/signup')
  *                 message:
  *                   type: string
  */
- router.route('/logout').post(userController.authenticate, userController.logout);
+ //router.route('/logout').post(passport.authenticate('jwt', { session: false }), userController.logout);   // deprecated, to log out simply delete jwt token from client side
 
 /**
  * @openapi
@@ -162,7 +162,7 @@ router.route('/signup')
  *                  default: "Christmas gifts"
  */
 router.route('/wishlists')
-    .post(userController.authenticate, userController.createWishlist);
+    .post(passport.authenticate('jwt', { session: false }), userController.createWishlist);
 
 /**
  * @openapi
@@ -198,7 +198,7 @@ router.route('/wishlists')
  *         description: Returns all wishlists.
  */
   router.route('/wishlists')
-  .get(userController.authenticate, userController.getAllWishlists);
+  .get(passport.authenticate('jwt', { session: false }), userController.getAllWishlists);
 
 /**
  * @openapi
@@ -231,7 +231,7 @@ router.route('/wishlists')
  *                 default: "kimon@email.com"
  */
 router.route('/wishlists/:id/invites')
-    .post(userController.authenticate, userController.createInvite);
+    .post(passport.authenticate('jwt', { session: false }), userController.createInvite);
 
 /**
  * @openapi
@@ -259,6 +259,6 @@ router.route('/wishlists/:id/invites')
  *         description: Returns an object of an invite.
  */
  router.route('/wishlists/:id/invites/:token')
- .get(userController.authenticate, userController.acceptInvite);
+ .get(passport.authenticate('jwt', { session: false }), userController.acceptInvite);
 
 module.exports = router;
