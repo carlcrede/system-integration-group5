@@ -24,7 +24,7 @@ function FriendsCard() {
         email: string;
     }
 
-    const { getUserToken, logout } = useAuth()
+    const { getUserToken } = useAuth()
     const [onlineFriends, setOnlineFriends] = useState([]);
     const [offlineFriends, setOfflineFriends] = useState([]);
     const [unregisteredFriends, setUnregisteredFriends] = useState([]);
@@ -35,8 +35,10 @@ function FriendsCard() {
                 withCredentials: false,
                 transports: ['polling', 'websocket'],
                 transportOptions: {
-                    polling: {  // TODO: use getUserToken instead of hardcoding the token
-                        extraHeaders: { "authorizationToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2Njk3Mjc5NjcsImV4cCI6MTcwMTI2Mzk2NywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImlkIjoiNjM3MTQyZTI3ODczOTU2NmQ4OWU5NDQ3In0.sNgdhxdtkk1oVGHETggAkRPF-4boU5gZLPeWltk3aSY" }
+                    polling: {  
+                        extraHeaders: { "authorizationToken": getUserToken() }
+                        // we used this hardcoded token to test the websocket connection, since we don't have the invites endpoint yet
+                        // extraHeaders: { "authorizationToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2Njk3Mjc5NjcsImV4cCI6MTcwMTI2Mzk2NywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImlkIjoiNjM3MTQyZTI3ODczOTU2NmQ4OWU5NDQ3In0.sNgdhxdtkk1oVGHETggAkRPF-4boU5gZLPeWltk3aSY" }
                     },
                 },
             });

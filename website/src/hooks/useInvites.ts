@@ -19,7 +19,25 @@ export const useInvites = () => {
     })
     if (!invite_res.ok) {
       toast({
-        title: await invite_res.text(),
+        title: "Failed to send invite",
+        status: 'error',
+        isClosable: true,
+      })
+    }
+    return invite_res.ok
+  };
+
+  const checkIfInviteExists = async (token: string) => {
+    const invite_res = await fetch(api_url + 'invites/exists/' + token, { // TODO: change with actual check invite endpoint when/if we have one
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getUserToken()
+      },
+    })
+    if (!invite_res.ok) {
+      toast({
+        title: "Invite not found",
         status: 'error',
         isClosable: true,
       })
@@ -37,7 +55,7 @@ export const useInvites = () => {
     })
     if (!invite_res.ok) {
       toast({
-        title: await invite_res.text(),
+        title: "Failed to accept invite",
         status: 'error',
         isClosable: true,
       })
@@ -45,5 +63,5 @@ export const useInvites = () => {
     return invite_res.ok
   };
 
-  return { sendInvite, acceptInvite };
+  return { sendInvite, acceptInvite, checkIfInviteExists };
 };

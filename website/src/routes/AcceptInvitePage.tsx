@@ -7,15 +7,40 @@ import {
   FormLabel,
   Button,
   Input,
+  Spacer,
+  useToast
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from 'formik';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useRoutes } from "react-router-dom";
 import PageTemplate from "../containers/PageTemplate";
 import { useInvites } from "../hooks/useInvites";
+import { useState, useEffect } from 'react';
+import FriendsCard from "../components/FriendsCard";
 
 function AcceptInvitePage() {
   const navigate = useNavigate();
-  const { acceptInvite } = useInvites();
+  const { acceptInvite, checkIfInviteExists } = useInvites();
+  const toast = useToast()
+
+  let { token } = useParams<{ token: string }>();
+
+  async function forceAcceptInvite(token: string) {
+    const acceptInviteRes = await acceptInvite(token)
+    if (acceptInviteRes) {
+      navigate('/')
+    }
+  }
+
+  async function forceCheckIfInviteExists(token: string) {
+    const checkIfInviteExistsRes = await checkIfInviteExists(token)
+    if (!checkIfInviteExistsRes) {
+      navigate('/')
+    }
+  }
+
+  useEffect(() => {
+    forceCheckIfInviteExists(token as string)
+  }, [])
 
   return (
     <PageTemplate selectedIndex={2}>
@@ -23,37 +48,9 @@ function AcceptInvitePage() {
         <Flex h='calc(100vh - 550px)' flexDirection="column">
           <VStack>
             <Text fontSize='x-large'>Accept Invites</Text>
-            <Formik
-              initialValues={{ token: '' }}
-              onSubmit={async (values, actions) => {
-                const acceptInviteRes = await acceptInvite(values.token)
-                actions.setSubmitting(false)
-                if (acceptInviteRes) {
-                  navigate('/accept-invites')
-                }
-              }}
-            >
-              {(props) => (
-                <Form>
-                  <Field name='token'>
-                    {({ field }) => (
-                      <FormControl>
-                        <FormLabel>Token</FormLabel>
-                        <Input {...field} type='text' placeholder='96205327-b844-409e-aad3-eb6a200a4595' />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Button
-                    mt={4}
-                    colorScheme='teal'
-                    isLoading={props.isSubmitting}
-                    type='submit'
-                  >
-                    Accept invite
-                  </Button>
-                </Form>
-              )}
-            </Formik>
+            <Spacer />
+            <Text fontSize='md'>Are you sure you want to accept the invitation?</Text>
+            <Button onClick={() => forceAcceptInvite(token as string)}>Accept</Button>
           </VStack>
         </Flex>
       </Box>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Product from "../components/Product";
 import { Product as ProductType } from "../gql/graphql";
 import PageTemplate from "../containers/PageTemplate";
+import FriendsCard from "../components/FriendsCard";
 
 const SearchProductDocument = gql(/* GraphQL */ 
 `query SearchProduct($name: String!) {
@@ -28,6 +29,7 @@ function HomePage() {
   return (
     <PageTemplate selectedIndex={0}>
     <Flex flexDir='column' align={'center'} justifyContent={'center'}>
+      <FriendsCard />
         <Text fontSize='x-large'>Products</Text>
         <InputGroup size='md' my="5" px="5">
           <Input
