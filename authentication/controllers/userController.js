@@ -4,7 +4,6 @@ const User = require('../models/User');
 const Wishlist = require('../models/Wishlist');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 const jwt = require('jsonwebtoken');
 
 
@@ -69,7 +68,7 @@ async function createWishlist(req, res) {
 
 async function getWishlist(req, res) {
     Wishlist.findOne({
-        _id: new ObjectId(req.params.id)
+        _id: req.params.id
     }, (err, wishlist) => {
         if (err) {
             res.statusCode = 500;
@@ -95,7 +94,7 @@ async function getWishlist(req, res) {
 
 function getCurrentWishlist(id) {
     return Wishlist.findOne({
-        _id: new ObjectId(id)
+        _id: id
     });
 }
 
@@ -127,7 +126,7 @@ async function getAllWishlists(req, res) {
 
 async function createInvite(req, res) {
     Wishlist.findOne({
-        _id: new ObjectId(req.params.id)
+        _id: req.params.id
     }, (err, wishlist) => {
         if (err) {
             res.statusCode = 500;
@@ -170,7 +169,7 @@ async function createInvite(req, res) {
 
 async function acceptInvite(req, res) {
     Wishlist.findOne({
-        _id: new ObjectId(req.params.id)
+        _id: req.params.id
     }, (err, wishlist) => {
         if (err) {
             res.statusCode = 500;
