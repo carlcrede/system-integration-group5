@@ -1,4 +1,4 @@
-import { Flex, Input, InputGroup, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { Center, Flex, Input, InputGroup, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
 import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
 import Product from "../components/Product";
@@ -31,7 +31,7 @@ function HomePage() {
     <Flex flexDir='column' align={'center'} justifyContent={'center'}>
       <FriendsCard />
         <Text fontSize='x-large'>Products</Text>
-        <InputGroup size='md' my="5" px="5">
+        <InputGroup size='md' my="5" px="5" width={500}>
           <Input
             value={productNameInput}
             onChange={(event) => setProductNameInput(event.target.value)}
