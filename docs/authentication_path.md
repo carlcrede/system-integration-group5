@@ -31,13 +31,13 @@ The credentials will be send in json in the following format:
   "name": "John Doe"
 }
 ```
-If the credentials are correct, the user information will be returned along with a success message. If the credentials were incorrect the request will return an error message. If all things worked a session will be established between the server and the user.
+If the credentials are correct, the user information will be returned along with a jwt token. If the credentials were incorrect the request will return an error message.
 
-## Sessions
-We use Passportjs to manage the authentication. Passport initializes a session with the user when the user logs in. The session token is stored in a cookie in the browser. This means that every subsequent request will automatically include the session token, which passport will use to authenticate the user. This should make it easier to integrate with as it should happen automatically. If this is not the case, make sure you have cookies enabled in your browser. With a session you will be able to access protected routes.
+## JWT
+We use Passportjs to manage the authentication. Passport verifies the login information and if correct we will return a jwt token to the user. This token will then be send on subsequent requests after that to access protected routes. Since the token is stored at the client, it also means that the system becomes more scaleable since we can just set up more servers and the servers will then verify the incoming tokens, based on the secret that is shared among them. An alternative would be sessions, which would require that the information would be stored on the server side, but this means that the application is more difficult to scale as you need a form of master server that knows which systems contains the information for which session. With jwt all servers know the secret and will then be able to decrypt the tokens no matter where they come from.
 
 ### Protected routes
-If we can't authenticate the user, an error message indicating that the user will need to log in will be returned and the user will be unable to proceed until they do so. This is only the case for protected routes. If you visit the swagger documentation you will see that the protected routes are indicated by a lock. You cannot access these endpoints without logging in and establishing a session.
+If we can't authenticate the user, an error message indicating that the user will need to log in will be returned and the user will be unable to proceed until they do so. This is only the case for protected routes. If you visit the swagger documentation you will see that the protected routes are indicated by a lock. You cannot access these endpoints without logging in and establishing logging in and setting the bearer token.
 
 # Accepting invitations
 We have provided an endpoint for accepting an invitation:
@@ -46,7 +46,4 @@ We have provided an endpoint for accepting an invitation:
 The server will verify if the invitation actually exists, if it has expired, if the person accepting it is the one who was invited, or if it is already been accepted once. If the user is able to accept the invitation then the wishlist will be returned.
 
 # Logging out
-We have provided an endpoint to forcefully end a session:
-- https://si-authentication.azurewebsites.net/logout
-
-This will tell the server that a session is no longer valid. This might be valid since hackers could potentially hijack a session, so forcefully ending a session would force them out as their subsequent requests would be denied. Using the login endpoint would then establish a new session. You will not need to send anything in the body of the request, as the cookie will automatically be send to the server, so it knows which session to end.
+To log out the user can simply delete their token.

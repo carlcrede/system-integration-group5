@@ -4,13 +4,16 @@ const User = require('../models/User');
 const Wishlist = require('../models/Wishlist');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
+const jwt = require('jsonwebtoken');
 
 
 
 async function logIn(req, res) {
     res.statusCode = 200;
-    res.json(req.user);     // user is inserted by passport into req so we simply send it back
+    res.json({
+        user: req.user,
+        jwt: issueJWT(req.user)
+    });
 }
 
 
@@ -65,7 +68,7 @@ async function createWishlist(req, res) {
 
 async function getWishlist(req, res) {
     Wishlist.findOne({
-        _id: new ObjectId(req.params.id)
+        _id: req.params.id
     }, (err, wishlist) => {
         if (err) {
             res.statusCode = 500;
@@ -91,7 +94,7 @@ async function getWishlist(req, res) {
 
 function getCurrentWishlist(id) {
     return Wishlist.findOne({
-        _id: new ObjectId(id)
+        _id: id
     });
 }
 
@@ -123,7 +126,7 @@ async function getAllWishlists(req, res) {
 
 async function createInvite(req, res) {
     Wishlist.findOne({
-        _id: new ObjectId(req.params.id)
+        _id: req.params.id
     }, (err, wishlist) => {
         if (err) {
             res.statusCode = 500;
@@ -166,7 +169,7 @@ async function createInvite(req, res) {
 
 async function acceptInvite(req, res) {
     Wishlist.findOne({
-        _id: new ObjectId(req.params.id)
+        _id: req.params.id
     }, (err, wishlist) => {
         if (err) {
             res.statusCode = 500;
@@ -227,6 +230,10 @@ async function acceptInvite(req, res) {
     });
 }
 
+/**
+ * 
+ * @deprecated
+ */
 function authenticate(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -235,6 +242,9 @@ function authenticate(req, res, next) {
     res.json({ message: 'You need to log in!' });
 }
 
+/**
+ * @deprecated
+ */
 function logout(req, res, next) {
     req.logout((err) => {
         if (err) {
@@ -244,6 +254,23 @@ function logout(req, res, next) {
         res.statusCode = 200;
         res.json({ message: 'You have been logged out' });
     });
+}
+
+function issueJWT(user) {
+    const _id = user._id;
+    const expiresIn = '1d';
+
+    const payload = {
+        sub: _id,
+        iat: Date.now()
+    };
+
+    const token = jwt.sign(payload, process.env.SECRET);
+
+    return {
+        token: token,
+        expires: expiresIn
+    }
 }
 
 module.exports = {
