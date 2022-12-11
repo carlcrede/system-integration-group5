@@ -93,34 +93,46 @@ router.route('/signup')
  *             schema:
  *               type: object
  *               properties:
- *                 _id:
- *                   type: string
- *                 email:
- *                   type: string
- *                 name:
- *                   type: string
- *                 salt:
- *                   type: string
- *                 hash:
- *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     salt:
+ *                       type: string
+ *                     hash:
+ *                       type: string
+ *                 jwt:
+ *                    type: object
+ *                    properties:
+ *                      token:
+ *                          type: string
+ *                      expires:
+ *                          type: string
+ *                    
  *       403:
  *         description: Returns an error message if password is incorrect
  *       404:
  *         description: User was not found
  */
  router.route('/login')
- .post(passport.authenticate('local'), userController.logIn);
+ .post(passport.authenticate('local', { session: false }), userController.logIn);
 
 /**
  * @openapi
  * /logout:
  *   post:
+ *     deprecated: true
  *     summary: Logs the user out and ends the session
- *     description: Ends the session. If the user tries to use the same session they will not be allowed to
+ *     description: Ends the session. If the user tries to use the same session they will not be allowed to. This is now deprecated. To log out simply delete the jwt on the client side
  *     tags: 
  *          - Authentication
  *     security:
- *       - cookieAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Returns a success message
@@ -132,7 +144,7 @@ router.route('/signup')
  *                 message:
  *                   type: string
  */
- router.route('/logout').post(userController.authenticate, userController.logout);
+ //router.route('/logout').post(passport.authenticate('jwt', { session: false }), userController.logout);   // deprecated, to log out simply delete jwt token from client side
 
 /**
  * @openapi
@@ -143,7 +155,7 @@ router.route('/signup')
  *     tags: 
  *          - Wishlists
  *     security:
- *       - cookieAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Returns a wishlist.
@@ -162,7 +174,7 @@ router.route('/signup')
  *                  default: "Christmas gifts"
  */
 router.route('/wishlists')
-    .post(userController.authenticate, userController.createWishlist);
+    .post(passport.authenticate('jwt', { session: false }), userController.createWishlist);
 
 /**
  * @openapi
@@ -193,12 +205,14 @@ router.route('/wishlists')
  *     description: Get all wishlists of the logged in user
  *     tags: 
  *          - Wishlists
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Returns all wishlists.
  */
   router.route('/wishlists')
-  .get(userController.authenticate, userController.getAllWishlists);
+  .get(passport.authenticate('jwt', { session: false }), userController.getAllWishlists);
 
 /**
  * @openapi
@@ -209,7 +223,7 @@ router.route('/wishlists')
  *     tags: 
  *          - Invites
  *     security:
- *       - cookieAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Returns an invite.
@@ -231,7 +245,7 @@ router.route('/wishlists')
  *                 default: "kimon@email.com"
  */
 router.route('/wishlists/:id/invites')
-    .post(userController.authenticate, userController.createInvite);
+    .post(passport.authenticate('jwt', { session: false }), userController.createInvite);
 
 /**
  * @openapi
@@ -253,12 +267,12 @@ router.route('/wishlists/:id/invites')
  *         type: string
  *         description: The invite token
  *     security:
- *       - cookieAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Returns an object of an invite.
  */
  router.route('/wishlists/:id/invites/:token')
- .get(userController.authenticate, userController.acceptInvite);
+ .get(passport.authenticate('jwt', { session: false }), userController.acceptInvite);
 
 module.exports = router;
