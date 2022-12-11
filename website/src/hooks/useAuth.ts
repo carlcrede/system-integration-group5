@@ -9,7 +9,7 @@ export const useAuth = () => {
   }
 
   const addUserToken = (userToken: string) => {
-    localStorage.setItem('user', JSON.stringify(userToken));
+    localStorage.setItem('user', userToken);
   };
 
   const removeUserToken = () => {

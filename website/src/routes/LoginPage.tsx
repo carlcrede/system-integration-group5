@@ -22,7 +22,7 @@ function LoginPage() {
     <PageTemplate selectedIndex={0}>
     <Container maxW='xs' centerContent>
       <VStack>
-        <h1>Login</h1>
+      <Text fontSize='x-large'>Login</Text>
         <Formik
           initialValues={{ email: '', password: '' }}
           onSubmit={async (values, actions) => {

@@ -14,12 +14,15 @@
     "@chakra-ui/react": "^2.3.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "engine.io-client": "^6.2.3",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
     "graphql": "^16.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
+    "socket.io": "^4.5.4",
+    "socket.io-client": "^4.5.4",
     "yup": "^0.32.11"
   },
   "devDependencies": {

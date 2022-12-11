@@ -84,38 +84,38 @@ mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: tr
 // Endpoints for testing
 //
 //
-app.get("/", (req, res) => {
-    const isAuthenticated = !!req.user;
-    if (isAuthenticated) {
-        console.log(`user is authenticated, session is ${req.session.id}, user is ${req.user.name}`);
-    } else {
-        console.log("unknown user");
-    }
-    res.sendFile(isAuthenticated ? "index.html" : "login.html", { root: __dirname + "/public" });
-});
-app.get("/login.html", (req, res) => {
-    const isAuthenticated = !!req.user;
-    res.sendFile(isAuthenticated ? "index.html" : "login.html", { root: __dirname + "/public" });
-});
-app.get("/index.html", (req, res) => {
-    const isAuthenticated = !!req.user;
-    res.sendFile(isAuthenticated ? "index.html" : "login.html", { root: __dirname + "/public" });
-});
+// app.get("/", (req, res) => {
+//     const isAuthenticated = !!req.user;
+//     if (isAuthenticated) {
+//         console.log(`user is authenticated, session is ${req.session.id}, user is ${req.user.name}`);
+//     } else {
+//         console.log("unknown user");
+//     }
+//     res.sendFile(isAuthenticated ? "index.html" : "login.html", { root: __dirname + "/public" });
+// });
+// app.get("/login.html", (req, res) => {
+//     const isAuthenticated = !!req.user;
+//     res.sendFile(isAuthenticated ? "index.html" : "login.html", { root: __dirname + "/public" });
+// });
+// app.get("/index.html", (req, res) => {
+//     const isAuthenticated = !!req.user;
+//     res.sendFile(isAuthenticated ? "index.html" : "login.html", { root: __dirname + "/public" });
+// });
 
 
-app.post("/logout", (req, res) => {
-    console.log(`logout ${req.session.id}`);
-    const socketId = req.session.socketId;
-    if (socketId && io.of("/").sockets.get(socketId)) {
-        console.log(`forcefully closing socket ${socketId}`);
-        io.of("/").sockets.get(socketId).disconnect(true);
-    }
-    req.logout(function (err) {
-        if (err) { return next(err); }
-        res.cookie("connect.sid", "", { expires: new Date() });
-        res.redirect("/login.html");
-    });
-});
+// app.post("/logout", (req, res) => {
+//     console.log(`logout ${req.session.id}`);
+//     const socketId = req.session.socketId;
+//     if (socketId && io.of("/").sockets.get(socketId)) {
+//         console.log(`forcefully closing socket ${socketId}`);
+//         io.of("/").sockets.get(socketId).disconnect(true);
+//     }
+//     req.logout(function (err) {
+//         if (err) { return next(err); }
+//         res.cookie("connect.sid", "", { expires: new Date() });
+//         res.redirect("/login.html");
+//     });
+// });
 //
 //
 // Endpoints for testing

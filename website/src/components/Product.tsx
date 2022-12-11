@@ -11,7 +11,7 @@ const Product: FunctionComponent<ProductProps> = ({ item }) => {
     const [open, setOpen] = useState(false)
 
     return ( 
-        <Box p='2' border='1px' borderColor='gray.200' borderRadius="md">
+        <Box p='2' border='1px' borderColor='gray.200' borderRadius="md" bgColor={"#DAEFFA"}>
             <Text mr='auto'>{item.main_category} {">"} {item.sub_category}</Text>
             <Box onClick={() => setOpen(true)}>
             <Img my="5" />

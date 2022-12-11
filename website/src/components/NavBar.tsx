@@ -12,7 +12,7 @@ import { useAuth } from "../hooks/useAuth";
 import Logo from "./Logo";
 
 type Props = {
-    selectedIndex: 0 | 1 | 2
+    selectedIndex: 0 | 1 | 2 | 3 | 4
 }
 
 const NavBar: FunctionComponent<Props> = ({selectedIndex}) => {
@@ -35,7 +35,10 @@ const NavBar: FunctionComponent<Props> = ({selectedIndex}) => {
                         <>
                         <Tab>
                             <Link to="/">Home</Link>
-                        </Tab>
+                        </Tab>                        
+                        <Tab>
+                            <Link to="/invites">Invites</Link>
+                        </Tab>                        
                         <Tab onClick={onLogout}>
                             Log out
                         </Tab>
