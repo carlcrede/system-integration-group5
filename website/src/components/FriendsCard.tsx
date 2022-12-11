@@ -36,31 +36,23 @@ function FriendsCard() {
                 transports: ['polling', 'websocket'],
                 transportOptions: {
                     polling: {  
-                        extraHeaders: { "authorizationToken": getUserToken() }
-                        // we used this hardcoded token to test the websocket connection, since we don't have the invites endpoint yet
-                        // extraHeaders: { "authorizationToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2Njk3Mjc5NjcsImV4cCI6MTcwMTI2Mzk2NywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImlkIjoiNjM3MTQyZTI3ODczOTU2NmQ4OWU5NDQ3In0.sNgdhxdtkk1oVGHETggAkRPF-4boU5gZLPeWltk3aSY" }
-                    },
+                        extraHeaders: { "authorizationToken": getUserToken() }},
                 },
             });
-
-
 
             socket.on("onlineFriends", (data) => {
                 setOnlineFriends(data);
                 console.log("Online: " + data);
-                console.log("Online event");
             });
 
             socket.on("offlineFriends", (data) => {
                 setOfflineFriends(data);
                 console.log("Offline: " + data);
-                console.log("Offline event");
             });
 
             socket.on("invitedFriends", (data) => {
                 setUnregisteredFriends(data);
                 console.log("Not registered: " + data);
-                console.log("Not registered event");
             });
         }, []
     )
