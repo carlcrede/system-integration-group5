@@ -32,7 +32,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/send-invites",
+    path: "/invites",
     element: <ProtectedRoute><SendInvitePage /></ProtectedRoute>,
     errorElement: <ErrorPage />,
     children: [

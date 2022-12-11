@@ -37,7 +37,7 @@ const NavBar: FunctionComponent<Props> = ({selectedIndex}) => {
                             <Link to="/">Home</Link>
                         </Tab>                        
                         <Tab>
-                            <Link to="/send-invites">Send Invites</Link>
+                            <Link to="/invites">Invites</Link>
                         </Tab>                        
                         <Tab onClick={onLogout}>
                             Log out

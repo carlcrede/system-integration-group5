@@ -67,7 +67,7 @@ function FriendsCard() {
 
     return (
         <Container className={friendStyle.sticky}width={300}>
-            <Card bg="gray.100" border="1px" borderColor="gray.200" borderRadius="lg" boxShadow="lg" p="2">
+            <Card bg="#c3d6e0" border="1px" borderColor="gray.200" borderRadius="lg" boxShadow="lg" p="2">
                 <CardHeader>
                     <Heading size='md'>Friends</Heading>
                 </CardHeader>

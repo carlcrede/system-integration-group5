@@ -27,7 +27,7 @@ function SendInvitePage() {
       <FriendsCard/>
         <Flex h='calc(100vh - 550px)' flexDirection="column">
           <VStack>
-            <Text fontSize='x-large'>Send Invites</Text>
+            <Text fontSize='x-large'> Invites</Text>
             <Formik
               initialValues={{ email: '' }}
               onSubmit={async (values, actions) => {
