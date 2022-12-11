@@ -12,7 +12,7 @@ const router = express.Router();
  *          - Wishes
  *     responses:
  *       200:
- *         description: Returns the rss feed in xml format
+ *         description: Returns the rss feed in xml format where the items will have custom elements (name, price, product_url, image_url) which you can use when parsing
  */
 router.route('/wishes.xml').get(wishController.get);
 
