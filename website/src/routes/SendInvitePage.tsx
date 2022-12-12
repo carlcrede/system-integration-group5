@@ -41,7 +41,7 @@ function SendInvitePage() {
               {(props) => (
                 <Form>
                   <Field name='email' validate={validateEmail}>
-                    {({ field, form }) => (
+                    {({ field, form }: {field:any, form:any}) => (
                       <FormControl isInvalid={form.errors.email && form.touched.email}>
                         <FormLabel>Email</FormLabel>
                         <Input {...field} type='email' placeholder='email@email.com' />

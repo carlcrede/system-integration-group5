@@ -36,7 +36,7 @@ function LoginPage() {
           {(props) => (
             <Form>
               <Field name='email' validate={validateEmail}>
-                {({ field, form }) => (
+                {({ field, form }: {field:any, form:any}) => (
                   <FormControl isInvalid={form.errors.email && form.touched.email}>
                     <FormLabel>Email</FormLabel>
                     <Input {...field} type='email' placeholder='email@email.com' />
@@ -45,7 +45,7 @@ function LoginPage() {
                 )}
               </Field>
               <Field name='password' validate={validatePassword}>
-                {({ field, form }) => (
+                {({ field, form }: {field:any, form:any}) => (
                   <FormControl isInvalid={form.errors.password && form.touched.password}>
                     <FormLabel>Password</FormLabel>
                     <Input {...field} type='password' placeholder='Password123' />

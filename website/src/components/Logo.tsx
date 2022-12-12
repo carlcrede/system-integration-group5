@@ -9,7 +9,7 @@ interface LogoProps {
 
 const Logo = ({ boxProps, imageProps, img_url }: LogoProps) => {
   return (
-    <Box {...boxProps}>
+    <Box mx="3" {...boxProps}>
         <Image maxH="50px" borderRadius='md' {...imageProps} src={img_url || logo_url} alt="logo" />
     </Box>
   )

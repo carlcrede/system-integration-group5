@@ -30,7 +30,7 @@ const NavBar: FunctionComponent<Props> = ({selectedIndex}) => {
                 index={selectedIndex}>
                 <TabList justifyContent='center' alignItems='center' ml='-125'>
                     <Text>(Logo)</Text>
-                    <Logo mx="3" />    
+                    <Logo />    
                     {getUserToken() ? (
                         <>
                         <Tab>

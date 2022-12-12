@@ -3,24 +3,17 @@ import {
   Flex,
   Text,
   VStack,
-  FormControl,
-  FormLabel,
   Button,
-  Input,
   Spacer,
-  useToast
 } from "@chakra-ui/react"
-import { Field, Form, Formik } from 'formik';
-import { useNavigate, useParams, useRoutes } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageTemplate from "../containers/PageTemplate";
 import { useInvites } from "../hooks/useInvites";
-import { useState, useEffect } from 'react';
-import FriendsCard from "../components/FriendsCard";
+import { useEffect } from 'react';
 
 function AcceptInvitePage() {
   const navigate = useNavigate();
   const { acceptInvite, checkIfInviteExists } = useInvites();
-  const toast = useToast()
 
   let { token } = useParams<{ token: string }>();
 

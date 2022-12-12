@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Text, useToast } from "@chakra-ui/react"
+import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Text } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik";
 import { useNavigate } from "react-router-dom";
 import PageTemplate from "../containers/PageTemplate";
@@ -26,7 +26,7 @@ function SignUpPage() {
           {(props) => (
             <Form>
               <Field name='firstName' validate={validateName}>
-                {({ field, form }) => (
+                {({ field, form }: {field:any, form:any}) => (
                   <FormControl isInvalid={form.errors.firstName && form.touched.firstName}>
                     <FormLabel>First Name</FormLabel>
                     <Input {...field} placeholder='John' />
@@ -35,7 +35,7 @@ function SignUpPage() {
                 )}
               </Field>
               <Field name='lastName' validate={validateName}>
-                {({ field, form }) => (
+                {({ field, form }: {field:any, form:any}) => (
                   <FormControl isInvalid={form.errors.lastName && form.touched.lastName}>
                     <FormLabel>Last Name</FormLabel>
                     <Input {...field} placeholder='Wick' />
@@ -44,7 +44,7 @@ function SignUpPage() {
                 )}
               </Field>
               <Field name='email' validate={validateEmail}>
-                {({ field, form }) => (
+                {({ field, form }: {field:any, form:any}) => (
                   <FormControl isInvalid={form.errors.email && form.touched.email}>
                     <FormLabel>Email</FormLabel>
                     <Input {...field} type='email' placeholder='email@email.com' />
@@ -53,7 +53,7 @@ function SignUpPage() {
                 )}
               </Field>
               <Field name='password' validate={validatePassword}>
-                {({ field, form }) => (
+                {({ field, form }: {field:any, form:any}) => (
                   <FormControl isInvalid={form.errors.password && form.touched.password}>
                     <FormLabel>Password</FormLabel>
                     <Input {...field} type='password' placeholder='Password123' />
@@ -62,7 +62,7 @@ function SignUpPage() {
                 )}
               </Field>
               <Field name='repeatPassword' validate={validatePassword}>
-                {({ field, form }) => (
+                {({ field, form }: {field:any, form:any}) => (
                   <FormControl isInvalid={form.errors.repeatPassword && form.touched.repeatPassword}>
                     <FormLabel>Repeat Password</FormLabel>
                     <Input {...field} type='password' placeholder='Password123' />
