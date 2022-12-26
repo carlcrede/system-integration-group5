@@ -68,7 +68,7 @@ function FriendsCard() {
                     <Stack divider={<StackDivider />} spacing='4'>
                         <Box>
                             <Heading size='xs' textTransform='uppercase' color={'green'}>
-                                Online &bull; ({onlineFriends.length})
+                                Online &bull; ({onlineFriends.length ? onlineFriends.length : 0})
                             </Heading>
                             <UnorderedList>
                                 {onlineFriends.map((friend: Friend) => (
@@ -78,7 +78,7 @@ function FriendsCard() {
                         </Box>
                         <Box>
                             <Heading size='xs' textTransform='uppercase' color={'red'}>
-                                Offline &bull; ({offlineFriends.length})
+                                Offline &bull; ({offlineFriends.length ? offlineFriends.length : 0})
                             </Heading>
                             <UnorderedList>
                                 {offlineFriends.map((friend: Friend) => (
@@ -88,7 +88,7 @@ function FriendsCard() {
                         </Box>
                         <Box>
                             <Heading size='xs' textTransform='uppercase' color={'gray'}>
-                                Not registered &bull; ({unregisteredFriends.length})
+                                Not registered &bull; ({unregisteredFriends.length ? unregisteredFriends.length : 0})
                             </Heading>
                             <UnorderedList>
                                 {unregisteredFriends.map((friend: Friend) => (
