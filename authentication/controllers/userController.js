@@ -46,6 +46,12 @@ async function getUserByEmail(email) {
     });
 }
 
+async function getUserById(id) {
+    return User.findOne({
+        _id: id
+    });
+}
+
 async function createWishlist(req, res) {
     const wishlist = new Wishlist({
         title: req.body.name,
@@ -278,6 +284,7 @@ module.exports = {
     logIn,
     logout,
     getUserByEmail,
+    getUserById,
     createWishlist,
     getWishlist,
     getCurrentWishlist,

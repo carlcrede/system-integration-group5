@@ -24,8 +24,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 // app.use(passport.session());    // remove TODO check                                                                                                        // TODO
 app.use(cors({  // TODO check if this is still needed
-    credentials: true, 
-    origin: true 
+    credentials: true,
+    origin: true
 }));
 const Strategy = User.createStrategy()
 const JwtStrategy = require('passport-jwt').Strategy;
@@ -99,7 +99,7 @@ mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: tr
 // });
 // app.get("/index.html", (req, res) => {
 //     const isAuthenticated = !!req.user;
-//     res.sendFile(isAuthenticated ? "index.html" : "login.html", { root: __dirname + "/public" });
+//     res.sendFile(isAuthenticated ? "index.html" : "index.html", { root: __dirname + "/public" });
 // });
 
 
@@ -128,8 +128,12 @@ passport.deserializeUser(User.deserializeUser());
 const io = require('socket.io')(server, {
     cors: {
         origin: '*',
+        methods: ['GET', 'POST'],
+        credentials: true
     }
 });
+const jwt = require('jsonwebtoken');
+
 
 // convert a connect middleware to a Socket.IO middleware
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
@@ -138,15 +142,23 @@ io.use(wrap(bodyParser.json()));
 io.use(wrap(cookieParser()));
 io.use(wrap(bodyParser.urlencoded({ extended: false })));
 io.use(wrap(passport.initialize()));
+// io.use(wrap(sessionMiddleware));
+// io.use(wrap(passport.authenticate(['jwt'])));
 
-io.use((socket, next) => {
-    if (socket.request.user) {
-        next();
-    } else {
-        next(new Error('unauthorized'))
+io.use(function (socket, next) {
+    if (socket.handshake.query && socket.handshake.query.token) {
+        jwt.verify(socket.handshake.query.token, process.env.SECRET, function (err, decoded) {
+            if (err) return next(new Error('Authentication error'));
+            socket.decoded = decoded;
+            console.log('User authenticated')
+            next();
+        });
     }
-});
-
+    else {
+        console.log('User not authenticated')
+        next(new Error('Authentication error'));
+    }
+})
 
 
 const SESSION_RELOAD_INTERVAL = 30 * 1000;
@@ -155,100 +167,102 @@ var offlineFriends = [];
 var notRegisteredFriends = [];
 const room = {};
 io.on('connection', (socket) => {
-    console.log(`new connection ${socket.id} for user ${socket.request.user.name}`);
+    userController.getUserById(socket.decoded.sub).then((currentUser) => {
+        console.log(`new connection ${socket.id} for user ${currentUser.name}`);
 
-    // emit logged in user's name and email to show on web page
-    socket.emit('name', socket.request.user.name);
-    socket.emit('email', socket.request.user.email);
+        // emit logged in user's name and email to show on web page
+        socket.emit('name', currentUser.name);
+        socket.emit('email', currentUser.email);
 
-    // get the session id from the request
-    const session = socket.request.session;
-    console.log(`saving sid ${socket.id} in session ${session.id}`);
-    session.socketId = socket.id;
-    session.save();
+        // get the session id from the request
+        // const session = socket.request.session;
+        // console.log(`saving sid ${socket.id} in session ${session.id}`);
+        // session.socketId = socket.id;
+        // session.save();
 
-    const timer = setInterval(() => {
-        socket.request.session.reload((err) => {
-            if (err) {
-                // forces the client to reconnect
-                socket.conn.close();
-                console.log(`closing socket ${socket.id} due to session reload error`);
+        // const timer = setInterval(() => {
+        //     socket.request.session.reload((err) => {
+        //         if (err) {
+        //             // forces the client to reconnect
+        //             socket.conn.close();
+        //             console.log(`closing socket ${socket.id} due to session reload error`);
+        //         }
+        //     });
+        // }, SESSION_RELOAD_INTERVAL);
+
+        // socket.on("message", (data) => {
+        //     io.in(data.room).emit("message", {
+        //         user: socket.request.user.name,
+        //         message: data.message
+        //     });
+        // });
+
+        socket.on('joinroom', (roomId) => {
+
+            if (!roomId) {
+                room[roomId] = {};
+                socket.join(roomId);
+                io.in(roomId).emit("room", currentUser.name);
+                getWishlistUsers();
+            } else {
+                socket.join(roomId);
+                io.in(roomId).emit("room", currentUser.name);
+                getWishlistUsers();
             }
-        });
-    }, SESSION_RELOAD_INTERVAL);
 
-    socket.on("message", (data) => {
-        io.in(data.room).emit("message", {
-            user: socket.request.user.name,
-            message: data.message
-        });
-    });
-
-    socket.on('joinroom', (roomId) => {
-
-        if (!roomId) {
-            room[roomId] = {};
-            socket.join(roomId);
-            io.in(roomId).emit("room", socket.request.user.name);
-            getWishlistUsers();
-        } else {
-            socket.join(roomId);
-            io.in(roomId).emit("room", socket.request.user.name);
-            getWishlistUsers();
-        }
-
-        function getWishlistUsers() {
-            try {
-                userController.getCurrentWishlist(roomId).then((wishlist) => {
-                    wishlist.invites.forEach(invite => {
-                        if (invite.status === 'pending') {
-                            if (!notRegisteredFriends.find(node => node.email === invite.email)) {
-                                notRegisteredFriends.push({ "email": invite.email, "name": "Unknown" })
-                            }
-                            io.in(roomId).emit('notRegistered', notRegisteredFriends);
-                            console.log("api: " + invite.email + " not registered");
-                        } else if (invite.status === 'accepted') {
-                            userController.getUserByEmail(invite.email).then((user) => {
-                                if (!offlineFriends.find(node => node.email === user.email)) {
-                                    offlineFriends.push({ "email": user.email, "name": user.name })
+            function getWishlistUsers() {
+                try {
+                    userController.getCurrentWishlist(roomId).then((wishlist) => {
+                        wishlist.invites.forEach(invite => {
+                            if (invite.status === 'pending') {
+                                if (!notRegisteredFriends.find(node => node.email === invite.email)) {
+                                    notRegisteredFriends.push({ "email": invite.email, "name": "Unknown" })
                                 }
-                                console.log("api: " + user.email + "-" + user.name + " registered");
-                            })
-                        }
+                                io.in(roomId).emit('notRegistered', notRegisteredFriends);
+                                console.log("api: " + invite.email + " not registered");
+                            } else if (invite.status === 'accepted') {
+                                userController.getUserByEmail(invite.email).then((user) => {
+                                    if (!offlineFriends.find(node => node.email === user.email)) {
+                                        offlineFriends.push({ "email": user.email, "name": user.name })
+                                    }
+                                    console.log("api: " + user.email + "-" + user.name + " registered");
+                                })
+                            }
+                        });
                     });
-                });
-            } catch (err) {
-                console.log(err);
+                } catch (err) {
+                    console.log(err);
+                }
+                console.log("User " + currentUser.name + " joined room \"" + roomId + "\"");
             }
-            console.log("User " + socket.request.user.name + " joined room \"" + roomId + "\"");
-        }
-        if (!onlineFriends.find(node => node.email === socket.request.user.email)) {
-            onlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
-        }
-        offlineFriends = offlineFriends.filter(node => node.email !== socket.request.user.email);
-        setTimeout(function () {
-            io.in(roomId).emit('online', onlineFriends);
-            io.in(roomId).emit('offline', offlineFriends);
-            io.in(roomId).emit('notRegistered', notRegisteredFriends);
-        }, 1000);
-    });
-
-    socket.on("disconnecting", () => {
-        socket.rooms.forEach(room => {
-            console.log("User " + socket.request.user.name + " left room " + room); // the Set contains at least the socket ID
-            onlineFriends = onlineFriends.filter(node => node.email !== socket.request.user.email);
-            if (!offlineFriends.find(node => node.email === socket.request.user.email)) {
-                offlineFriends.push({ "email": socket.request.user.email, "name": socket.request.user.name })
+            if (!onlineFriends.find(node => node.email === currentUser.email)) {
+                onlineFriends.push({ "email": currentUser.email, "name": currentUser.name })
             }
-            // emit offline friends to show on web page
-            io.in(room).emit('offline', offlineFriends);
-            io.in(room).emit('online', onlineFriends);
+            offlineFriends = offlineFriends.filter(node => node.email !== currentUser.email);
+            setTimeout(function () {
+                io.in(roomId).emit('online', onlineFriends);
+                io.in(roomId).emit('offline', offlineFriends);
+                io.in(roomId).emit('notRegistered', notRegisteredFriends);
+            }, 1000);
         });
-    });
 
-    socket.on('disconnect', () => {
-        clearInterval(timer);
-        console.log(`user ${socket.request.user.email} with socket ${socket.id} disconnected`);
+        socket.on("disconnecting", () => {
+            socket.rooms.forEach(room => {
+                console.log("User " + socket.decoded.sub + " left room " + room); // the Set contains at least the socket ID
+                onlineFriends = onlineFriends.filter(node => node.email !== currentUser.email);
+                if (!offlineFriends.find(node => node.email === currentUser.email)) {
+                    offlineFriends.push({ "email": currentUser.email, "name": currentUser.name })
+                }
+                // emit offline friends to show on web page
+                io.in(room).emit('offline', offlineFriends);
+                io.in(room).emit('online', onlineFriends);
+            });
+        });
+
+        socket.on('disconnect', () => {
+            // clearInterval(timer);
+            console.log(`user ${currentUser.name} with socket ${socket.id} disconnected`);
+        });
     });
 });
 
