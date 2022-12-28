@@ -47,6 +47,7 @@
                 headers: headers,
                 data: data
             }).then(response => {
+                localStorage.setItem('user', response.data.jwt.token);
                 return window.location.href = 'index.html';
             }).catch(error => {
                 console.log(error);

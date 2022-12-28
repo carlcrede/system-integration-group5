@@ -15,11 +15,10 @@
   <ul><b>Online</b><span id="online"></span></ul>
   <ul><b>Offline</b><span id="offline"></span></ul>
   <ul><b>Not Registered</b><span id="notRegistered"></span></ul>
-  <form action="/logout" method="post">
-    <div>
-      <input type="submit" value="Log out" />
-    </div>
-  </form>
+  <button id="logout" onclick="logout()">Log out</button>
+  <br>
+  <br>
+  <br>
   <input id="room" type="text" />
   <button id="joinRoom" onclick="joinRoom()">Join Room</button>
   <br>
@@ -30,17 +29,49 @@
   <br>
   <ul id="messages"></ul>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script>
+
   <script>
-    const socket = io("http://localhost:8080");
+    const token = window.localStorage.getItem('user')
+    console.log(token);
+    const socket = io("http://localhost:8080", {
+      withCredentials: false,
+      transports: ['polling', 'websocket'],
+      transportOptions: {
+                    polling: {  
+                        extraHeaders: { "token": token}},
+                },
+      // auth: {
+      //   token: token
+      // }
+    });
+    // const socket = io("http://localhost:8080");
+    // const socket = io("http://localhost:8080", {
+    //             withCredentials: false,
+    //             transports: ['polling', 'websocket'],
+
+    //         });
+    // const socket = io("https://si-authentication.azurewebsites.net", {
+    //             withCredentials: false,
+    //             transports: ['polling', 'websocket'],
+
+    //         });
     const socketIdSpan = document.getElementById("socketId");
     const emailSpan = document.getElementById("email");
     const nameSpan = document.getElementById("name");
     const onlineList = document.getElementById("online");
     const offlineList = document.getElementById("offline");
     const notRegisteredList = document.getElementById("notRegistered");
+
+    function logout() {
+      localStorage.removeItem("user");
+      return window.location.href = 'login.html';
+    }
+
     function joinRoom() {
       const roomNumber = document.getElementById("room").value;
+      console.log(roomNumber);
       socket.emit("joinroom", roomNumber);
     }
 

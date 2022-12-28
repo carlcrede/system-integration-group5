@@ -18,10 +18,11 @@ import friendStyle from "../components/friends.module.css";
 function FriendsCard() {
 
     interface Friend {
-        _id: string;
-        firstName: string;
-        lastName: string;
+        // _id: string;
+        // firstName: string;
+        // lastName: string;
         email: string;
+        name: string;
     }
 
     const { getUserToken } = useAuth()
@@ -31,26 +32,37 @@ function FriendsCard() {
 
     useEffect(
         () => {
-            const socket = io("https://lionfish-app-hsj4b.ondigitalocean.app/", {
-                withCredentials: false,
-                transports: ['polling', 'websocket'],
-                transportOptions: {
-                    polling: {  
-                        extraHeaders: { "authorizationToken": getUserToken() }},
+            const socket = io("https://si-authentication.azurewebsites.net", {
+                query: {
+                    token: getUserToken()
                 },
+                transports: ['websocket', 'polling']
             });
 
-            socket.on("onlineFriends", (data) => {
+            
+            joinRoom()
+
+            function joinRoom() {
+                const roomNumber = "637e849b6cbce308c1108662";
+                // console.log(roomNumber);
+                socket.emit("joinroom", roomNumber);
+              }
+
+              socket.on('room', (data) => {
+                console.log(data + " joined the room");
+              });
+
+            socket.on("online", (data) => {
                 setOnlineFriends(data);
                 console.log("Online: " + data);
             });
 
-            socket.on("offlineFriends", (data) => {
+            socket.on("offline", (data) => {
                 setOfflineFriends(data);
                 console.log("Offline: " + data);
             });
 
-            socket.on("invitedFriends", (data) => {
+            socket.on("notRegistered", (data) => {
                 setUnregisteredFriends(data);
                 console.log("Not registered: " + data);
             });
@@ -72,7 +84,7 @@ function FriendsCard() {
                             </Heading>
                             <UnorderedList>
                                 {onlineFriends.map((friend: Friend) => (
-                                    <ListItem key={friend._id}>{friend.firstName}</ListItem>
+                                    <ListItem key={friend.email}>{friend.name}</ListItem>
                                 ))}
                             </UnorderedList>
                         </Box>
@@ -82,7 +94,7 @@ function FriendsCard() {
                             </Heading>
                             <UnorderedList>
                                 {offlineFriends.map((friend: Friend) => (
-                                    <ListItem key={friend._id}>{friend.firstName}</ListItem>
+                                    <ListItem key={friend.email}>{friend.name}</ListItem>
                                 ))}
                             </UnorderedList>
                         </Box>
@@ -92,7 +104,7 @@ function FriendsCard() {
                             </Heading>
                             <UnorderedList>
                                 {unregisteredFriends.map((friend: Friend) => (
-                                    <ListItem key={friend._id}>{friend.email ? friend.email : "[No email found?!]"}</ListItem>
+                                    <ListItem key={friend.email}>{friend.email ? friend.email : "[No email found?!]"}</ListItem>
                                 ))}
                             </UnorderedList>
                         </Box>

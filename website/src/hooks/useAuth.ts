@@ -1,15 +1,30 @@
 import { useToast } from '@chakra-ui/react';
 
+type LoginResponse = {
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    salt: string;
+    hash: string;
+  },
+  jwt: {
+    token: string;
+    expires: string;
+  }
+}
+
 export const useAuth = () => {
   const toast = useToast()
-  const api_url = 'https://si-auth-server-5rds.onrender.com/api/';
+  const api_url = 'http://localhost:8080/';
 
   const getUserToken = () => {
     return localStorage.getItem('user');
   }
 
-  const addUserToken = (userToken: string) => {
-    localStorage.setItem('user', userToken);
+  const addUserToken = (user: Object) => {
+    const token = (user as LoginResponse).jwt.token;
+    localStorage.setItem('user', token);
   };
 
   const removeUserToken = () => {
@@ -17,21 +32,21 @@ export const useAuth = () => {
   };
 
   const login = async (email: string, password: string) => {
-    const login_res = await fetch(api_url + 'auth/login', {
+    const login_res = await fetch(api_url + 'login', {
          method: 'POST', 
          headers: { 'Content-Type': 'application/json' }, 
          body: JSON.stringify({ email, password }) 
     })
-    const res = await login_res.text()
+    // const res = await login_res.text()
     if (!login_res.ok) {
       toast({
-        title: res,
+        title: login_res.statusText,
         status: 'error',
         isClosable: true,
       })
     }
     else {
-      addUserToken(res);
+      addUserToken(await login_res.json());
     }
     return login_res.ok
   };
