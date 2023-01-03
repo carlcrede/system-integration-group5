@@ -16,7 +16,7 @@ type LoginResponse = {
 
 export const useAuth = () => {
   const toast = useToast()
-  const api_url = 'http://localhost:8080/';
+  const api_url = 'https://si-authentication.azurewebsites.net/';
 
   const getUserToken = () => {
     return localStorage.getItem('user');
