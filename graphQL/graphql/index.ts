@@ -11,6 +11,8 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import bodyParser from 'body-parser';
 
+const cors = require('cors');
+
 setInterval(async () => {
     await db_connect();
 }, 10000);
@@ -18,6 +20,7 @@ setInterval(async () => {
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const app = express();
+app.use(cors())
 const httpServer = createServer(app);
 
 const wsServer = new WebSocketServer({
