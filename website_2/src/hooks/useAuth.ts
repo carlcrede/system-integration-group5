@@ -36,7 +36,7 @@ export const useAuth = () => {
     }
     else {
       // addUserToken(res);
-      addUserToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzhmOWUzZThkM2JkNTVkOWJjY2E1N2QiLCJpYXQiOjE2NzI2NzE1NDB9.g2IrETcL_5KA7yY0jqd_BOWs5cWnU2luOLQdQ3tL9zw");
+      addUserToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2IyZWNlNDE4ZmZiZWMxZjBlNjEyZGEiLCJpYXQiOjE2NzI2NzE1OTN9.NXMCioFDVK8_7oNzb6D0FB6FQbcMqVI7lJwphGEn3Hw");
     }
     return login_res.ok
   };
